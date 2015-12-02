@@ -46,49 +46,80 @@
 
 	'use strict';
 	
-	$(document).ready(function () {
+	var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
 	
-	    function paginate(direction) {
-	        $('.gallery-item').each(function () {
+	    el: null,
+	    itemWidth: 0,
+	
+	    createdCallback: function createdCallback() {
+	        var _this = this;
+	
+	        this.el = $(this);
+	        var firstChild = this.el.children().first();
+	        this.itemWidth = firstChild.width();
+	        this.itemWidth += parseInt(firstChild.css('margin-left'));
+	        this.itemWidth += parseInt(firstChild.css('margin-right'));
+	
+	        //position elements
+	        var itemCount = this.el.children().length;
+	        var middleItem = Math.ceil(itemCount / 2);
+	        this.el.children().each(function (index, item) {
+	            //TODO: the center xpos needs to pe calculated in a proper way
+	            //total width of container - half width of item
+	            var xPos = _this.itemWidth / 2; // 100
+	            var indexDiff = index + 1 - middleItem;
+	            xPos += indexDiff * _this.itemWidth;
+	            $(item).css('left', xPos);
+	        });
+	
+	        //register event handlers
+	        $('#left').click(function () {
+	            return _this.paginate(_this.itemWidth);
+	        });
+	        $('#right').click(function () {
+	            return _this.paginate(-_this.itemWidth);
+	        });
+	        var ts;
+	        this.el.on('touchstart', function (e) {
+	            ts = e.touches[0].clientX;
+	        });
+	
+	        this.el.on('touchend', function (e) {
+	            var te = e.changedTouches[0].clientX;
+	            if (ts - te > 0) {
+	                _this.paginate(-_this.itemWidth);
+	            } else {
+	                _this.paginate(_this.itemWidth);
+	            }
+	        });
+	    },
+	    paginate: function paginate(direction) {
+	        this.el.children().each(function () {
 	            var left = parseInt($(this).css('left'));
 	            $(this).css('left', left + direction);
 	        });
 	        if (direction > 0) {
 	            //left clicked, move last item to the beginning
-	            var last = $('.gallery-item').last();
+	            var last = this.el.children().last();
 	            last.hide();
-	            $('.gallery-wrapper').prepend(last);
-	            last.css('left', -300);
+	            this.el.prepend(last);
+	            var widthLeft = this.itemWidth + this.itemWidth / 2;
+	            last.css('left', -widthLeft);
 	            last.show();
 	        } else if (direction < 0) {
 	            //right clicked, move first item to the end
-	            var first = $('.gallery-item').first();
+	            var first = this.el.children().first();
 	            first.hide();
-	            $('.gallery-wrapper').append(first);
-	            first.css('left', 500);
+	            this.el.append(first);
+	            var widthRight = this.itemWidth + this.itemWidth + this.itemWidth / 2;
+	            first.css('left', widthRight);
 	            first.show();
 	        }
 	    }
+	});
 	
-	    $('#left').click(function () {
-	        paginate(200);
-	    });
-	    $('#right').click(function () {
-	        paginate(-200);
-	    });
-	    var ts;
-	    document.addEventListener('touchstart', function (e) {
-	        ts = e.touches[0].clientX;
-	    });
-	
-	    document.addEventListener('touchend', function (e) {
-	        var te = e.changedTouches[0].clientX;
-	        if (ts - te > 0) {
-	            paginate(-200);
-	        } else {
-	            paginate(200);
-	        }
-	    });
+	document.registerElement('as24-gallery', {
+	    prototype: as24gallery
 	});
 
 /***/ }
