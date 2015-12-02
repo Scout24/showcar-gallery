@@ -76,6 +76,19 @@
 	    $('#right').click(function () {
 	        paginate(-200);
 	    });
+	    var ts;
+	    document.addEventListener('touchstart', function (e) {
+	        ts = e.touches[0].clientX;
+	    });
+	
+	    document.addEventListener('touchend', function (e) {
+	        var te = e.changedTouches[0].clientX;
+	        if (ts - te > 0) {
+	            paginate(-200);
+	        } else {
+	            paginate(200);
+	        }
+	    });
 	});
 
 /***/ }
