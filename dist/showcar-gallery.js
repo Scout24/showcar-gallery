@@ -45,6 +45,8 @@
 /***/ function(module, exports) {
 
 	"use strict";
+	
+	$(document).ready(function () {});
 
 /***/ }
 /******/ ]);
