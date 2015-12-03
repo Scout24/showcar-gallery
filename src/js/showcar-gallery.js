@@ -50,6 +50,7 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         $('[data-src]', this.el).each(function (item) {
             item.src = item.data('src');
         });
+        this.isInitialized = true;
     },
 
     paginate (direction) {

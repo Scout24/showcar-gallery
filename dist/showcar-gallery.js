@@ -50,6 +50,7 @@
 	
 	    el: null,
 	    itemWidth: 0,
+	    isInitialized: false,
 	
 	    createdCallback: function createdCallback() {
 	        var _this = this;
@@ -81,8 +82,10 @@
 	        });
 	        var ts;
 	        this.el.on('touchstart', function (e) {
+	            _this.init();
 	            ts = e.touches[0].clientX;
 	        });
+	        this.el.on('click', this.init);
 	
 	        this.el.on('touchend', function (e) {
 	            var te = e.changedTouches[0].clientX;
@@ -92,6 +95,15 @@
 	                _this.paginate(_this.itemWidth);
 	            }
 	        });
+	    },
+	    init: function init() {
+	        if (this.isInitialized) {
+	            return;
+	        }
+	        $('[data-src]', this.el).each(function (item) {
+	            item.src = item.data('src');
+	        });
+	        this.isInitialized = true;
 	    },
 	    paginate: function paginate(direction) {
 	        this.el.children().each(function () {
