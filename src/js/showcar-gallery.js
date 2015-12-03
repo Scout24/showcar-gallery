@@ -2,6 +2,7 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
 
     el: null,
     itemWidth: 0,
+    isInitialized: false,
 
     createdCallback () {
         this.el = $(this);
@@ -27,8 +28,10 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         $('#right').click(() => this.paginate(-this.itemWidth));
         var ts;
         this.el.on('touchstart', (e) => {
+            this.init();
             ts = e.touches[0].clientX;
         });
+        this.el.on('click', this.init);
 
         this.el.on('touchend', (e) => {
             var te = e.changedTouches[0].clientX;
@@ -39,6 +42,16 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
             }
         });
     },
+
+    init() {
+        if (this.isInitialized) {
+            return;
+        }
+        $('[data-src]', this.el).each(function (item) {
+            item.src = item.data('src');
+        });
+    },
+
     paginate (direction) {
         this.el.children().each(function() {
             var left = parseInt($(this).css('left'));
