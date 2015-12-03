@@ -75,10 +75,10 @@
 	
 	        //register event handlers
 	        $('#left').click(function () {
-	            return _this.paginate(_this.itemWidth);
+	            return _this.moveLeft(_this.itemWidth);
 	        });
 	        $('#right').click(function () {
-	            return _this.paginate(-_this.itemWidth);
+	            return _this.moveRight(_this.itemWidth);
 	        });
 	        var ts;
 	        this.el.on('touchstart', function (e) {
@@ -90,9 +90,9 @@
 	        this.el.on('touchend', function (e) {
 	            var te = e.changedTouches[0].clientX;
 	            if (ts - te > 0) {
-	                _this.paginate(-_this.itemWidth);
+	                _this.moveRight(_this.itemWidth);
 	            } else {
-	                _this.paginate(_this.itemWidth);
+	                _this.moveLeft(_this.itemWidth);
 	            }
 	        });
 	    },
@@ -105,28 +105,29 @@
 	        });
 	        this.isInitialized = true;
 	    },
-	    paginate: function paginate(direction) {
+	    moveLeft: function moveLeft(direction) {
+	        this.moveItems(direction);
+	        var last = this.el.children().last();
+	        last.hide();
+	        this.el.prepend(last);
+	        var widthLeft = this.itemWidth + this.itemWidth / 2;
+	        last.css('left', -widthLeft);
+	        last.show();
+	    },
+	    moveRight: function moveRight(direction) {
+	        this.moveItems(-direction);
+	        var first = this.el.children().first();
+	        first.hide();
+	        this.el.append(first);
+	        var widthRight = this.itemWidth + this.itemWidth + this.itemWidth / 2;
+	        first.css('left', widthRight);
+	        first.show();
+	    },
+	    moveItems: function moveItems(direction) {
 	        this.el.children().each(function () {
 	            var left = parseInt($(this).css('left'));
 	            $(this).css('left', left + direction);
 	        });
-	        if (direction > 0) {
-	            //left clicked, move last item to the beginning
-	            var last = this.el.children().last();
-	            last.hide();
-	            this.el.prepend(last);
-	            var widthLeft = this.itemWidth + this.itemWidth / 2;
-	            last.css('left', -widthLeft);
-	            last.show();
-	        } else if (direction < 0) {
-	            //right clicked, move first item to the end
-	            var first = this.el.children().first();
-	            first.hide();
-	            this.el.append(first);
-	            var widthRight = this.itemWidth + this.itemWidth + this.itemWidth / 2;
-	            first.css('left', widthRight);
-	            first.show();
-	        }
 	    }
 	});
 	

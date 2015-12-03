@@ -24,8 +24,8 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         });
 
         //register event handlers
-        $('#left').click(() => this.paginate(this.itemWidth));
-        $('#right').click(() => this.paginate(-this.itemWidth));
+        $('#left').click(() => this.moveLeft(this.itemWidth));
+        $('#right').click(() => this.moveRight(this.itemWidth));
         var ts;
         this.el.on('touchstart', (e) => {
             this.init();
@@ -36,9 +36,9 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         this.el.on('touchend', (e) => {
             var te = e.changedTouches[0].clientX;
             if (ts - te > 0) {
-                this.paginate(-this.itemWidth);
+                this.moveRight(this.itemWidth);
             } else {
-                this.paginate(this.itemWidth);
+                this.moveLeft(this.itemWidth);
             }
         });
     },
@@ -53,29 +53,31 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         this.isInitialized = true;
     },
 
-    paginate (direction) {
+    moveLeft(direction) {
+        this.moveItems(direction);
+        var last = this.el.children().last();
+        last.hide();
+        this.el.prepend(last);
+        var widthLeft = this.itemWidth + this.itemWidth / 2;
+        last.css('left', -widthLeft);
+        last.show();
+    },
+
+    moveRight(direction) {
+        this.moveItems(-direction);
+        var first = this.el.children().first();
+        first.hide();
+        this.el.append(first);
+        var widthRight = this.itemWidth + this.itemWidth + this.itemWidth / 2;
+        first.css('left', widthRight);
+        first.show();
+    },
+
+    moveItems(direction) {
         this.el.children().each(function() {
             var left = parseInt($(this).css('left'));
             $(this).css('left', left + direction);
         });
-        if (direction > 0) {
-            //left clicked, move last item to the beginning
-            var last = this.el.children().last();
-            last.hide();
-            this.el.prepend(last);
-            var widthLeft = this.itemWidth + this.itemWidth / 2;
-            last.css('left', -widthLeft);
-            last.show();
-        }
-        else if(direction < 0) {
-            //right clicked, move first item to the end
-            var first = this.el.children().first();
-            first.hide();
-            this.el.append(first);
-            var widthRight = this.itemWidth + this.itemWidth + this.itemWidth / 2;
-            first.css('left', widthRight);
-            first.show();
-        }
     }
 });
 
