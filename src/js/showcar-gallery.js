@@ -3,10 +3,11 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
     el: null,
     itemWidth: 0,
     isInitialized: false,
+    itemName: 'as24-gallery-item',
 
     createdCallback () {
         this.el = $(this);
-        const firstChild = this.el.children().first();
+        const firstChild = this.el.children(this.itemName).first();
         this.itemWidth = firstChild.width();
         this.itemWidth += parseInt(firstChild.css('margin-left'));
         this.itemWidth += parseInt(firstChild.css('margin-right'));
@@ -45,42 +46,45 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
     },
 
     positionElements() {
-        const itemCount = this.el.children().length;
+        const itemCount = this.el.children(this.itemName).length;
         const middleItem = Math.ceil(itemCount / 2);
         const centerPos = (this.el[0].clientWidth - this.itemWidth) / 2;
 
-        this.el.children().each((index, item) => {
+        this.el.children(this.itemName).each((index, item) => {
             if (index < itemCount / 2) {
                 this.el.append(item);
             }
         });
 
-        this.el.children().each((index, item) => {
+        this.el.children(this.itemName).each((index, item) => {
             var indexDiff = ((index + 1) - middleItem);
             $(item).css('left', centerPos + (indexDiff * this.itemWidth));
         });
     },
 
     moveLeft(direction) {
-        var firstLeft = this.el.children().first().position()['left'];
+        var firstElement = this.el.children(this.itemName).first();
+        var firstLeft = firstElement.position()['left'];
         this.moveItems(direction);
-        var last = this.el.children().last();
-        last.hide();
-        this.el.prepend(last);
-        last.css('left', firstLeft).show();
+        var last = this.el.children(this.itemName).last();
+        last.hide()
+            .insertBefore(firstElement)
+            .css('left', firstLeft)
+            .show();
     },
 
     moveRight(direction) {
-        var lastLeft = this.el.children().last().position()['left'];
+        var lastElement = this.el.children(this.itemName).last();
+        var lastLeft = lastElement.position()['left'];
         this.moveItems(-direction);
-        var first = this.el.children().first();
+        var first = this.el.children(this.itemName).first();
         first.hide();
-        this.el.append(first);
+        first.insertChildAfter(lastElement);
         first.css('left', lastLeft).show();
     },
 
     moveItems(direction) {
-        this.el.children().each(function() {
+        this.el.children(this.itemName).each(function() {
             var left = parseInt($(this).css('left'));
             $(this).css('left', left + direction);
         });
