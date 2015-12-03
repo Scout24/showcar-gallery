@@ -12,16 +12,7 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         this.itemWidth += parseInt(firstChild.css('margin-right'));
 
         //position elements
-        const itemCount = this.el.children().length;
-        const middleItem = Math.ceil(itemCount / 2);
-        this.el.children().each((index, item) => {
-            //TODO: the center xpos needs to pe calculated in a proper way
-            //total width of container - half width of item
-            var xPos = (this.itemWidth / 2); // 100
-            var indexDiff = ((index + 1) - middleItem);
-            xPos += (indexDiff * this.itemWidth);
-            $(item).css('left', xPos);
-        });
+        this.positionElements();
 
         //register event handlers
         $('#left').click(() => this.moveLeft(this.itemWidth));
@@ -47,30 +38,45 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         if (this.isInitialized) {
             return;
         }
-        $('[data-src]', this.el).each(function (item) {
-            item.src = item.data('src');
+        $('[data-src]', this.el).each(function (index, item) {
+            item.src = $(item).data('src');
         });
         this.isInitialized = true;
     },
 
+    positionElements() {
+        const itemCount = this.el.children().length;
+        const middleItem = Math.ceil(itemCount / 2);
+        const centerPos = (this.el[0].clientWidth - this.itemWidth) / 2;
+
+        this.el.children().each((index, item) => {
+            if (index < itemCount / 2) {
+                this.el.append(item);
+            }
+        });
+
+        this.el.children().each((index, item) => {
+            var indexDiff = ((index + 1) - middleItem);
+            $(item).css('left', centerPos + (indexDiff * this.itemWidth));
+        });
+    },
+
     moveLeft(direction) {
+        var firstLeft = this.el.children().first().position()['left'];
         this.moveItems(direction);
         var last = this.el.children().last();
         last.hide();
         this.el.prepend(last);
-        var widthLeft = this.itemWidth + this.itemWidth / 2;
-        last.css('left', -widthLeft);
-        last.show();
+        last.css('left', firstLeft).show();
     },
 
     moveRight(direction) {
+        var lastLeft = this.el.children().last().position()['left'];
         this.moveItems(-direction);
         var first = this.el.children().first();
         first.hide();
         this.el.append(first);
-        var widthRight = this.itemWidth + this.itemWidth + this.itemWidth / 2;
-        first.css('left', widthRight);
-        first.show();
+        first.css('left', lastLeft).show();
     },
 
     moveItems(direction) {
