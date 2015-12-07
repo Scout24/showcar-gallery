@@ -16,8 +16,8 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         this.positionElements();
 
         //register event handlers
-        $('#left').click(() => this.moveLeft(this.itemWidth));
-        $('#right').click(() => this.moveRight(this.itemWidth));
+        $('.left', this.el).click(() => this.moveLeft(this.itemWidth));
+        $('.right', this.el).click(() => this.moveRight(this.itemWidth));
         var ts;
         this.el.on('touchstart', (e) => {
             this.init();
@@ -33,6 +33,14 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
                 this.moveLeft(this.itemWidth);
             }
         });
+        this.pager();
+    },
+
+    pager() {
+        var totalNumber = this.el.children(this.itemName).length;
+        // how to get the current Element?
+        var currentElement = $(this.el.children(this.itemName)[2]).data('number');
+        $('.pager', this.el).html(currentElement + '/' + totalNumber);
     },
 
     init() {
@@ -71,6 +79,7 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
             .insertBefore(firstElement)
             .css('left', firstLeft)
             .show();
+        this.pager();
     },
 
     moveRight(direction) {
@@ -79,8 +88,9 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         this.moveItems(-direction);
         var first = this.el.children(this.itemName).first();
         first.hide();
-        first.insertChildAfter(lastElement);
+        first.insertAfter(lastElement);
         first.css('left', lastLeft).show();
+        this.pager();
     },
 
     moveItems(direction) {

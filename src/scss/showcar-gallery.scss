@@ -6,6 +6,36 @@ as24-gallery {
   position: relative;
   overflow: hidden;
 
+  .left, .right {
+    position: absolute;
+    top: 0;
+
+    height: 100px;
+    width: 100px;
+    opacity: .5;
+    background-color: black;
+    z-index: 1;
+    color: white;
+    text-align: center;
+    line-height: 100px;
+    cursor: pointer;
+  }
+
+  .left {
+    left: 0;
+  }
+  .right {
+    left: 300px;
+  }
+
+  .pager {
+    position: absolute;
+    z-index: 1;
+    top: 80px;
+    left: 115px;
+    color: white;
+  }
+
   as24-gallery-item {
     display: block;
     box-sizing: border-box;

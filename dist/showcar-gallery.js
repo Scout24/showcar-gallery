@@ -66,10 +66,10 @@
 	        this.positionElements();
 	
 	        //register event handlers
-	        $('#left').click(function () {
+	        $('.left', this.el).click(function () {
 	            return _this.moveLeft(_this.itemWidth);
 	        });
-	        $('#right').click(function () {
+	        $('.right', this.el).click(function () {
 	            return _this.moveRight(_this.itemWidth);
 	        });
 	        var ts;
@@ -87,6 +87,13 @@
 	                _this.moveLeft(_this.itemWidth);
 	            }
 	        });
+	        this.pager();
+	    },
+	    pager: function pager() {
+	        var totalNumber = this.el.children(this.itemName).length;
+	        // how to get the current Element?
+	        var currentElement = $(this.el.children(this.itemName)[2]).data('number');
+	        $('.pager', this.el).html(currentElement + '/' + totalNumber);
 	    },
 	    init: function init() {
 	        if (this.isInitialized) {
@@ -121,6 +128,7 @@
 	        this.moveItems(direction);
 	        var last = this.el.children(this.itemName).last();
 	        last.hide().insertBefore(firstElement).css('left', firstLeft).show();
+	        this.pager();
 	    },
 	    moveRight: function moveRight(direction) {
 	        var lastElement = this.el.children(this.itemName).last();
@@ -128,8 +136,9 @@
 	        this.moveItems(-direction);
 	        var first = this.el.children(this.itemName).first();
 	        first.hide();
-	        first.insertChildAfter(lastElement);
+	        first.insertAfter(lastElement);
 	        first.css('left', lastLeft).show();
+	        this.pager();
 	    },
 	    moveItems: function moveItems(direction) {
 	        this.el.children(this.itemName).each(function () {
