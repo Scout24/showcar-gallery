@@ -62,6 +62,11 @@
 	        this.itemWidth += parseInt(firstChild.css('margin-left'));
 	        this.itemWidth += parseInt(firstChild.css('margin-right'));
 	
+	        if (this.isEdgecase()) {
+	            this.handleEdgecases();
+	            return;
+	        }
+	
 	        //position elements
 	        this.positionElements();
 	
@@ -104,8 +109,38 @@
 	        });
 	        this.isInitialized = true;
 	    },
-	    positionElements: function positionElements() {
+	    isEdgecase: function isEdgecase() {
+	        return this.el.children(this.itemName).length < 3;
+	    },
+	    handleEdgecases: function handleEdgecases() {
 	        var _this2 = this;
+	
+	        $('.left, .right, .pager', this.el).hide();
+	
+	        switch (this.el.children(this.itemName).length) {
+	            case 0:
+	                // no image
+	                // display dummy element
+	                this.el.append($("<div>i'm a dummy</div>"));
+	                break;
+	            case 1:
+	                // one image
+	                // center aligned
+	                var item = this.el.children(this.itemName);
+	                var centerPos = (this.el[0].clientWidth - this.itemWidth) / 2;
+	                $(item).css('left', centerPos);
+	                break;
+	            case 2:
+	                // two images
+	                // left/right aligned
+	                this.el.children(this.itemName).each(function (index, item) {
+	                    $(item).css('left', index * _this2.itemWidth);
+	                });
+	                break;
+	        }
+	    },
+	    positionElements: function positionElements() {
+	        var _this3 = this;
 	
 	        var itemCount = this.el.children(this.itemName).length;
 	        var middleItem = Math.ceil(itemCount / 2);
@@ -113,13 +148,13 @@
 	
 	        this.el.children(this.itemName).each(function (index, item) {
 	            if (index < itemCount / 2) {
-	                _this2.el.append(item);
+	                _this3.el.append(item);
 	            }
 	        });
 	
 	        this.el.children(this.itemName).each(function (index, item) {
 	            var indexDiff = index + 1 - middleItem;
-	            $(item).css('left', centerPos + indexDiff * _this2.itemWidth);
+	            $(item).css('left', centerPos + indexDiff * _this3.itemWidth);
 	        });
 	    },
 	    moveLeft: function moveLeft(direction) {

@@ -12,6 +12,11 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         this.itemWidth += parseInt(firstChild.css('margin-left'));
         this.itemWidth += parseInt(firstChild.css('margin-right'));
 
+        if (this.isEdgecase()) {
+            this.handleEdgecases();
+            return;
+        }
+
         //position elements
         this.positionElements();
 
@@ -51,6 +56,36 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
             item.src = $(item).data('src');
         });
         this.isInitialized = true;
+    },
+
+    isEdgecase() {
+        return this.el.children(this.itemName).length < 3;
+    },
+
+    handleEdgecases() {
+        $('.left, .right, .pager', this.el).hide();
+
+        switch (this.el.children(this.itemName).length) {
+            case 0:
+                // no image
+                // display dummy element
+                this.el.append($("<div>i'm a dummy</div>"));
+                break;
+            case 1:
+                // one image
+                // center aligned
+                var item = this.el.children(this.itemName);
+                var centerPos = (this.el[0].clientWidth - this.itemWidth) / 2;
+                $(item).css('left', centerPos);
+                break;
+            case 2:
+                // two images
+                // left/right aligned
+                this.el.children(this.itemName).each((index, item)  => {
+                    $(item).css('left', index * this.itemWidth);
+                });
+                break;
+        }
     },
 
     positionElements() {
