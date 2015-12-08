@@ -121,7 +121,7 @@
 	            case 0:
 	                // no image
 	                // display dummy element
-	                this.el.append($("<div>i'm a dummy</div>"));
+	                $('.placeholder', this.el).show();
 	                break;
 	            case 1:
 	                // one image
