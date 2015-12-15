@@ -7,18 +7,17 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
 
     createdCallback () {
         this.el = $(this);
-        const firstChild = this.el.children(this.itemName).first();
-        this.itemWidth = firstChild.width();
-        this.itemWidth += parseInt(firstChild.css('margin-left'));
-        this.itemWidth += parseInt(firstChild.css('margin-right'));
-
+        //wait for first element to be loaded and position items afterwards
+        //TODO: think about a solution if the load event won't occur
+        // --> maybe only use the load event if there is a gallery item without width
+        $('img[src]', this.el).first().on('load', () => {
+            this.itemWidth = this.calculateItemWidth();
+            this.positionElements();
+        });
         if (this.isEdgecase()) {
             this.handleEdgecases();
             return;
         }
-
-        //position elements
-        this.positionElements();
 
         //register event handlers
         $('.left', this.el).click(() => this.moveLeft(this.itemWidth));
@@ -48,6 +47,16 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         $('.pager', this.el).html(currentElement + '/' + totalNumber);
     },
 
+    calculateItemWidth() {
+        const firstChild = this.el.children(this.itemName).first();
+        var itemWidth = firstChild.width();
+        itemWidth += parseInt(firstChild.css('margin-left'));
+        itemWidth += parseInt(firstChild.css('margin-right'));
+
+        return itemWidth;
+    },
+
+    //TODO: rename 'init' to something that is more specific, e.g. lazyLoadImages()
     init() {
         if (this.isInitialized) {
             return;
@@ -118,6 +127,7 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
     },
 
     moveRight(direction) {
+
         var lastElement = this.el.children(this.itemName).last();
         var lastLeft = lastElement.position()['left'];
         this.moveItems(-direction);

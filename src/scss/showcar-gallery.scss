@@ -1,39 +1,45 @@
 as24-gallery {
   display: block;
-  border: 2px solid blue;
-  width: 400px;
-  height: 100px;
   position: relative;
   overflow: hidden;
 
   .left, .right {
     position: absolute;
     top: 0;
+    bottom: 0;
 
-    height: 100px;
     width: 100px;
     opacity: .5;
     background-color: black;
     z-index: 1;
     color: white;
     text-align: center;
-    line-height: 100px;
-    cursor: pointer;
-  }
+    vertical-align: middle;
 
+    cursor: pointer;
+
+    &:before {
+      //used for vertical positioning of pager
+      content: '';
+      display: inline-block;
+      height: 100%;
+      vertical-align: middle;
+    }
+  }
   .left {
     left: 0;
   }
   .right {
-    left: 300px;
+    right: 0;
   }
 
   .pager {
     position: absolute;
     z-index: 1;
-    top: 80px;
+    bottom: 0;
     left: 115px;
     color: white;
+    font-size: 22px;
   }
   .placeholder {
     display: none;
@@ -43,26 +49,32 @@ as24-gallery {
     display: block;
     box-sizing: border-box;
     position: absolute;
-    width: 180px;
-    height: 100px;
-
 
     margin: 0 10px;
-    //padding: 0 10px;
 
     background: gray;
+    height: 100%;
     top: 0;
+    bottom: 0;
 
-    font-size: 20px;
+    font-size: 0;
     text-align: center;
 
     //don't increase transition 0.2s, will cause position calculation problems
     transition: left 0.2s;
     transition-timing-function: ease-in-out;
+
+    img {
+      height: 100%;
+      /*
+      height: 100%;
+      width: 100%;
+      max-width: 640px;
+      max-height: 480px;
+      display: inline;
+      */
+    }
   }
 }
 
-img {
-  max-width: 100%;
-  max-height: 100%;
-}
+
