@@ -63,6 +63,8 @@
 	        $('img[src]', this.el).first().on('load', function () {
 	            _this.itemWidth = _this.calculateItemWidth();
 	            _this.positionElements();
+	            var arrowWidth = _this.el.width() / 2 - _this.itemWidth / 2;
+	            $('.right, .left', _this.el).css('width', arrowWidth);
 	        });
 	        if (this.isEdgecase()) {
 	            this.handleEdgecases();

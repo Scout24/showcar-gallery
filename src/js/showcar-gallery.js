@@ -13,6 +13,9 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         $('img[src]', this.el).first().on('load', () => {
             this.itemWidth = this.calculateItemWidth();
             this.positionElements();
+            var arrowWidth = this.el.width() / 2 - this.itemWidth / 2;
+            $('.right, .left', this.el).css('width', arrowWidth);
+
         });
         if (this.isEdgecase()) {
             this.handleEdgecases();
