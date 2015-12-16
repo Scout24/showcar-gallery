@@ -6,5 +6,9 @@ as24-gallery {
   height: 480px;
   width: 100%;
   border: 2px solid blue;
+
+  as24-gallery-item {
+    width: 640px;
+  }
 }
 
