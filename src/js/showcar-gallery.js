@@ -21,8 +21,6 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
     },
 
     fillItems () {
-        $('.' + this.duplicateClass, this.el).remove();
-
         var noOfItems = this.el.children(this.itemName).length;
         var space = this.el[0].clientWidth - noOfItems * this.itemWidth;
 

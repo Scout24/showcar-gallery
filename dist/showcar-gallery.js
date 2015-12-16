@@ -67,8 +67,6 @@
 	        $('.right, .left', this.el).css('width', overlayWidth);
 	    },
 	    fillItems: function fillItems() {
-	        $('.' + this.duplicateClass, this.el).remove();
-	
 	        var noOfItems = this.el.children(this.itemName).length;
 	        var space = this.el[0].clientWidth - noOfItems * this.itemWidth;
 	
