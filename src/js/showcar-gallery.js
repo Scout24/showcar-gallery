@@ -12,7 +12,7 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         this.positionElements(reorder);
 
 
-        $('.right, .left', this.el).toggleClass('overlay', this.itemWidth < this.el.width());
+        $('.right, .left', this.el).toggleClass('pagination-small', this.itemWidth >= this.el.width());
 
         var overlayWidth = this.el[0].clientWidth / 2 - this.itemWidth / 2;
         const firstChild = this.el.children(this.itemName).first();
