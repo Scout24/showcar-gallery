@@ -3,7 +3,7 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
     el: null,
     itemWidth: 0,
     itemName: 'as24-gallery-item',
-    duplicateClass: '.data-duplicate',
+    duplicateClass: 'duplicate',
 
     init(reorder) {
         this.itemWidth = this.calculateItemWidth();
@@ -21,19 +21,19 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
     },
 
     fillItems () {
-        $(this.duplicateClass, this.el).remove();
+        $('.' + this.duplicateClass, this.el).remove();
 
         var noOfItems = this.el.children(this.itemName).length;
-        var space = this.el.width() - noOfItems * this.itemWidth;
+        var space = this.el[0].clientWidth - noOfItems * this.itemWidth;
 
         if (space > 0) {
             var numberOfItemsToCreate = Math.ceil(Math.ceil(space / this.itemWidth) / noOfItems) * noOfItems;
-            var index = numberOfItemsToCreate;
+            var index = noOfItems;
             for (var i = 1; i <= numberOfItemsToCreate; i++) {
                 var dataNo = i % noOfItems;
                 dataNo = dataNo || noOfItems;
                 index += 1;
-                var el = $('[data-number="' + dataNo + '"').clone().data('number', index);
+                var el = $('[data-number="' + dataNo + '"').clone().data('number', index).addClass(this.duplicateClass);
                 var target = $('[data-number="' + (index - 1) + '"]');
                 target.after(el);
             }
