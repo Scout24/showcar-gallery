@@ -22,18 +22,25 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         //register event handlers
         $('.left', this.el).click(() => this.moveLeft(this.itemWidth));
         $('.right', this.el).click(() => this.moveRight(this.itemWidth));
-        var ts;
+        var ts = 0;
         this.el.on('touchstart', (e) => {
             this.lazyLoadImages();
-            ts = e.touches[0].clientX;
+            if ($(e.target).hasClass('right') || $(e.target).hasClass('left')) {
+                ts = null;
+            } else {
+                ts = e.touches[0].clientX;
+            }
         });
         this.el.on('click', this.lazyLoadImages);
 
         this.el.on('touchend', (e) => {
-            var te = e.changedTouches[0].clientX;
-            if (ts - te > 0) {
+            if (ts === null) {
+                return;
+            }
+            var touchDiffX = ts - e.changedTouches[0].clientX;
+            if (touchDiffX > 0) {
                 this.moveRight(this.itemWidth);
-            } else {
+            } else if (touchDiffX < 0) {
                 this.moveLeft(this.itemWidth);
             }
         });

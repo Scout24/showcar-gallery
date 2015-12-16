@@ -76,18 +76,25 @@
 	        $('.right', this.el).click(function () {
 	            return _this.moveRight(_this.itemWidth);
 	        });
-	        var ts;
+	        var ts = 0;
 	        this.el.on('touchstart', function (e) {
 	            _this.lazyLoadImages();
-	            ts = e.touches[0].clientX;
+	            if ($(e.target).hasClass('right') || $(e.target).hasClass('left')) {
+	                ts = null;
+	            } else {
+	                ts = e.touches[0].clientX;
+	            }
 	        });
 	        this.el.on('click', this.lazyLoadImages);
 	
 	        this.el.on('touchend', function (e) {
-	            var te = e.changedTouches[0].clientX;
-	            if (ts - te > 0) {
+	            if (ts === null) {
+	                return;
+	            }
+	            var touchDiffX = ts - e.changedTouches[0].clientX;
+	            if (touchDiffX > 0) {
 	                _this.moveRight(_this.itemWidth);
-	            } else {
+	            } else if (touchDiffX < 0) {
 	                _this.moveLeft(_this.itemWidth);
 	            }
 	        });
