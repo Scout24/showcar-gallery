@@ -3,10 +3,14 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
     el: null,
     itemWidth: 0,
     itemName: 'as24-gallery-item',
+    duplicateClass: '.data-duplicate',
 
     init(reorder) {
         this.itemWidth = this.calculateItemWidth();
+
+        this.fillItems();
         this.positionElements(reorder);
+
 
         $('.right, .left', this.el).toggleClass('overlay', this.itemWidth < this.el.width());
 
@@ -14,6 +18,26 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         const firstChild = this.el.children(this.itemName).first();
         overlayWidth -= parseInt(firstChild.css('margin-left'));
         $('.right, .left', this.el).css('width', overlayWidth);
+    },
+
+    fillItems () {
+        $(this.duplicateClass, this.el).remove();
+
+        var noOfItems = this.el.children(this.itemName).length;
+        var space = this.el.width() - noOfItems * this.itemWidth;
+
+        if (space > 0) {
+            var numberOfItemsToCreate = Math.ceil(Math.ceil(space / this.itemWidth) / noOfItems) * noOfItems;
+            var index = numberOfItemsToCreate;
+            for (var i = 1; i <= numberOfItemsToCreate; i++) {
+                var dataNo = i % noOfItems;
+                dataNo = dataNo || noOfItems;
+                index += 1;
+                var el = $('[data-number="' + dataNo + '"').clone().data('number', index);
+                var target = $('[data-number="' + (index - 1) + '"]');
+                target.after(el);
+            }
+        }
     },
 
     createdCallback () {
@@ -30,12 +54,9 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         });
 
         this.el = $(this);
-        //wait for first element to be loaded and position items afterwards
-        //TODO: think about a solution if the load event won't occur
-        // --> maybe only use the load event if there is a gallery item without width
-        $('img[src]', this.el).first().on('load', () => {
-            this.init(true);
-        });
+
+        this.init(true);
+
         if (this.isEdgecase()) {
             this.handleEdgecases();
             return;
@@ -130,7 +151,7 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
 
         if (reorder) {
             this.el.children(this.itemName).each((index, item) => {
-                if (index < itemCount / 2) {
+                if (index <= itemCount / 2) {
                     this.el.append(item);
                 }
             });
