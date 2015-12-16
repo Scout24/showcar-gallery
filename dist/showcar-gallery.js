@@ -78,10 +78,10 @@
 	        });
 	        var ts;
 	        this.el.on('touchstart', function (e) {
-	            _this.init();
+	            _this.lazyLoadImages();
 	            ts = e.touches[0].clientX;
 	        });
-	        this.el.on('click', this.init);
+	        this.el.on('click', this.lazyLoadImages);
 	
 	        this.el.on('touchend', function (e) {
 	            var te = e.changedTouches[0].clientX;
@@ -107,14 +107,13 @@
 	
 	        return itemWidth;
 	    },
-	
-	    //TODO: rename 'init' to something that is more specific, e.g. lazyLoadImages()
-	    init: function init() {
+	    lazyLoadImages: function lazyLoadImages() {
 	        if (this.isInitialized) {
 	            return;
 	        }
 	        $('[data-src]', this.el).each(function (index, item) {
 	            item.src = $(item).data('src');
+	            $(item).attr('data-src', null);
 	        });
 	        this.isInitialized = true;
 	    },
@@ -163,7 +162,17 @@
 	
 	        this.el.children(this.itemName).each(function (index, item) {
 	            var indexDiff = index + 1 - middleItem;
-	            $(item).css('left', centerPos + indexDiff * _this3.itemWidth);
+	            var leftPos = centerPos + indexDiff * _this3.itemWidth;
+	
+	            if (leftPos + _this3.itemWidth > 0 && leftPos < _this3.el.width()) {
+	                var image = $('[data-src]', item);
+	                if (image.length > 0) {
+	                    image[0].src = image.data('src');
+	                    image.attr('data-src', null);
+	                }
+	            }
+	
+	            $(item).css('left', leftPos);
 	        });
 	    },
 	    moveLeft: function moveLeft(direction) {

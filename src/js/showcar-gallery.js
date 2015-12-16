@@ -24,10 +24,10 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         $('.right', this.el).click(() => this.moveRight(this.itemWidth));
         var ts;
         this.el.on('touchstart', (e) => {
-            this.init();
+            this.lazyLoadImages();
             ts = e.touches[0].clientX;
         });
-        this.el.on('click', this.init);
+        this.el.on('click', this.lazyLoadImages);
 
         this.el.on('touchend', (e) => {
             var te = e.changedTouches[0].clientX;
@@ -39,6 +39,7 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         });
         this.pager();
     },
+
 
     pager() {
         var totalNumber = this.el.children(this.itemName).length;
@@ -56,13 +57,13 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         return itemWidth;
     },
 
-    //TODO: rename 'init' to something that is more specific, e.g. lazyLoadImages()
-    init() {
+    lazyLoadImages() {
         if (this.isInitialized) {
             return;
         }
         $('[data-src]', this.el).each(function (index, item) {
             item.src = $(item).data('src');
+            $(item).attr('data-src', null);
         });
         this.isInitialized = true;
     },
@@ -110,7 +111,17 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
 
         this.el.children(this.itemName).each((index, item) => {
             var indexDiff = ((index + 1) - middleItem);
-            $(item).css('left', centerPos + (indexDiff * this.itemWidth));
+            var leftPos = centerPos + (indexDiff * this.itemWidth);
+
+            if (leftPos + this.itemWidth > 0 && leftPos < this.el.width()) {
+                var image = $('[data-src]', item);
+                if (image.length > 0) {
+                    image[0].src = image.data('src');
+                    image.attr('data-src', null);
+                }
+            }
+
+            $(item).css('left', leftPos);
         });
     },
 
