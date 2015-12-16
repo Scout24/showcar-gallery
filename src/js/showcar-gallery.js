@@ -10,7 +10,9 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
 
         $('.right, .left', this.el).toggleClass('overlay', this.itemWidth < this.el.width());
 
-        var overlayWidth = this.el.width() / 2 - this.itemWidth / 2;
+        var overlayWidth = this.el[0].clientWidth / 2 - this.itemWidth / 2;
+        const firstChild = this.el.children(this.itemName).first();
+        overlayWidth -= parseInt(firstChild.css('margin-left'));
         $('.right, .left', this.el).css('width', overlayWidth);
     },
 
