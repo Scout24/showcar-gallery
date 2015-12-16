@@ -9,8 +9,10 @@ as24-gallery {
     bottom: 0;
 
     width: 100px;
-    opacity: .5;
-    background-color: black;
+    &.overlay {
+      opacity: .5;
+      background-color: black;
+    }
     z-index: 1;
     color: white;
     text-align: center;

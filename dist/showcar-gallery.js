@@ -50,21 +50,38 @@
 	
 	    el: null,
 	    itemWidth: 0,
-	    isInitialized: false,
 	    itemName: 'as24-gallery-item',
 	
+	    init: function init(reorder) {
+	        this.itemWidth = this.calculateItemWidth();
+	        this.positionElements(reorder);
+	
+	        $('.right, .left', this.el).toggleClass('overlay', this.itemWidth < this.el.width());
+	
+	        var overlayWidth = this.el.width() / 2 - this.itemWidth / 2;
+	        $('.right, .left', this.el).css('width', overlayWidth);
+	    },
 	    createdCallback: function createdCallback() {
 	        var _this = this;
+	
+	        var handler,
+	            timeout = 500;
+	
+	        $(window).on('resize', function () {
+	            if (handler) {
+	                clearTimeout(handler);
+	            }
+	            handler = setTimeout(function () {
+	                _this.init();
+	            }, timeout);
+	        });
 	
 	        this.el = $(this);
 	        //wait for first element to be loaded and position items afterwards
 	        //TODO: think about a solution if the load event won't occur
 	        // --> maybe only use the load event if there is a gallery item without width
 	        $('img[src]', this.el).first().on('load', function () {
-	            _this.itemWidth = _this.calculateItemWidth();
-	            _this.positionElements();
-	            var arrowWidth = _this.el.width() / 2 - _this.itemWidth / 2;
-	            $('.right, .left', _this.el).css('width', arrowWidth);
+	            _this.init(true);
 	        });
 	        if (this.isEdgecase()) {
 	            this.handleEdgecases();
@@ -117,14 +134,10 @@
 	        return itemWidth;
 	    },
 	    lazyLoadImages: function lazyLoadImages() {
-	        if (this.isInitialized) {
-	            return;
-	        }
 	        $('[data-src]', this.el).each(function (index, item) {
 	            item.src = $(item).data('src');
 	            $(item).attr('data-src', null);
 	        });
-	        this.isInitialized = true;
 	    },
 	    isEdgecase: function isEdgecase() {
 	        return this.el.children(this.itemName).length < 3;
@@ -156,18 +169,20 @@
 	                break;
 	        }
 	    },
-	    positionElements: function positionElements() {
+	    positionElements: function positionElements(reorder) {
 	        var _this3 = this;
 	
 	        var itemCount = this.el.children(this.itemName).length;
 	        var middleItem = Math.ceil(itemCount / 2);
 	        var centerPos = (this.el[0].clientWidth - this.itemWidth) / 2;
 	
-	        this.el.children(this.itemName).each(function (index, item) {
-	            if (index < itemCount / 2) {
-	                _this3.el.append(item);
-	            }
-	        });
+	        if (reorder) {
+	            this.el.children(this.itemName).each(function (index, item) {
+	                if (index < itemCount / 2) {
+	                    _this3.el.append(item);
+	                }
+	            });
+	        }
 	
 	        this.el.children(this.itemName).each(function (index, item) {
 	            var indexDiff = index + 1 - middleItem;
@@ -193,7 +208,6 @@
 	        this.pager();
 	    },
 	    moveRight: function moveRight(direction) {
-	
 	        var lastElement = this.el.children(this.itemName).last();
 	        var lastLeft = lastElement.position()['left'];
 	        this.moveItems(-direction);

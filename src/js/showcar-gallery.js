@@ -2,20 +2,37 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
 
     el: null,
     itemWidth: 0,
-    isInitialized: false,
     itemName: 'as24-gallery-item',
 
+    init(reorder) {
+        this.itemWidth = this.calculateItemWidth();
+        this.positionElements(reorder);
+
+        $('.right, .left', this.el).toggleClass('overlay', this.itemWidth < this.el.width());
+
+        var overlayWidth = this.el.width() / 2 - this.itemWidth / 2;
+        $('.right, .left', this.el).css('width', overlayWidth);
+    },
+
     createdCallback () {
+        var handler,
+            timeout = 500;
+
+        $(window).on('resize', () => {
+            if(handler) {
+                clearTimeout(handler);
+            }
+            handler = setTimeout(() => {
+                this.init();
+            }, timeout);
+        });
+
         this.el = $(this);
         //wait for first element to be loaded and position items afterwards
         //TODO: think about a solution if the load event won't occur
         // --> maybe only use the load event if there is a gallery item without width
         $('img[src]', this.el).first().on('load', () => {
-            this.itemWidth = this.calculateItemWidth();
-            this.positionElements();
-            var arrowWidth = this.el.width() / 2 - this.itemWidth / 2;
-            $('.right, .left', this.el).css('width', arrowWidth);
-
+            this.init(true);
         });
         if (this.isEdgecase()) {
             this.handleEdgecases();
@@ -68,14 +85,10 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
     },
 
     lazyLoadImages() {
-        if (this.isInitialized) {
-            return;
-        }
         $('[data-src]', this.el).each(function (index, item) {
             item.src = $(item).data('src');
             $(item).attr('data-src', null);
         });
-        this.isInitialized = true;
     },
 
     isEdgecase() {
@@ -108,16 +121,18 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         }
     },
 
-    positionElements() {
+    positionElements(reorder) {
         const itemCount = this.el.children(this.itemName).length;
         const middleItem = Math.ceil(itemCount / 2);
         const centerPos = (this.el[0].clientWidth - this.itemWidth) / 2;
 
-        this.el.children(this.itemName).each((index, item) => {
-            if (index < itemCount / 2) {
-                this.el.append(item);
-            }
-        });
+        if (reorder) {
+            this.el.children(this.itemName).each((index, item) => {
+                if (index < itemCount / 2) {
+                    this.el.append(item);
+                }
+            });
+        }
 
         this.el.children(this.itemName).each((index, item) => {
             var indexDiff = ((index + 1) - middleItem);
@@ -148,7 +163,6 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
     },
 
     moveRight(direction) {
-
         var lastElement = this.el.children(this.itemName).last();
         var lastLeft = lastElement.position()['left'];
         this.moveItems(-direction);
