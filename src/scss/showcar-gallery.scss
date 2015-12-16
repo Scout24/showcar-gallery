@@ -66,9 +66,11 @@ as24-gallery {
 
     margin: 0 10px;
 
-    //don't increase transition 0.2s, will cause position calculation problems
-    transition: left 0.2s;
-    transition-timing-function: ease-in-out;
+    &.transition {
+      //don't increase transition 0.2s, will cause position calculation problems
+      transition: left 0.2s;
+      transition-timing-function: ease-in-out;
+    }
 
     width: 640px;
     height: 480px;

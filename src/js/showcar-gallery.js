@@ -4,6 +4,7 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
     itemWidth: 0,
     itemName: 'as24-gallery-item',
     duplicateClass: 'duplicate',
+    positions: [],
 
     init(reorder) {
         this.itemWidth = this.calculateItemWidth();
@@ -64,26 +65,51 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         $('.left', this.el).click(() => this.moveLeft(this.itemWidth));
         $('.right', this.el).click(() => this.moveRight(this.itemWidth));
         var ts = 0;
+        var prev = 0;
         this.el.on('touchstart', (e) => {
             this.lazyLoadImages();
             if ($(e.target).hasClass('right') || $(e.target).hasClass('left')) {
                 ts = null;
             } else {
                 ts = e.touches[0].clientX;
+                prev = ts;
             }
         });
         this.el.on('click', this.lazyLoadImages);
+
+        this.el.on('touchmove', (e) => {
+            var touchDiffX = e.changedTouches[0].clientX - prev;
+            prev = e.changedTouches[0].clientX;
+            this.moveItems(touchDiffX);
+        });
 
         this.el.on('touchend', (e) => {
             if (ts === null) {
                 return;
             }
+            // reorder
             var touchDiffX = ts - e.changedTouches[0].clientX;
-            if (touchDiffX > 0) {
-                this.moveRight(this.itemWidth);
-            } else if (touchDiffX < 0) {
-                this.moveLeft(this.itemWidth);
+            var absTouchDiffX = Math.abs(touchDiffX);
+            var howMany = Math.ceil(absTouchDiffX / this.itemWidth);
+
+            for (var i = 0; i < howMany; i++) {
+                if (touchDiffX > 0) {
+                    this.moveRight();
+                } else if (touchDiffX < 0) {
+                    this.moveLeft();
+                }
             }
+            // add transition class
+            $('as24-gallery-item', this.el).addClass('transition');
+            // go last steps
+            var positions = this.positions;
+            this.el.children(this.itemName).each(function (index) {
+                $(this).css('left', positions[index]);
+            });
+            // remove transition class
+            $('as24-gallery-item', this.el).removeClass('transition');
+
+
         });
         this.pager();
     },
@@ -155,6 +181,8 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
             });
         }
 
+        this.positions = [];
+
         this.el.children(this.itemName).each((index, item) => {
             var indexDiff = ((index + 1) - middleItem);
             var leftPos = centerPos + (indexDiff * this.itemWidth);
@@ -167,41 +195,40 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
                 }
             }
 
+            this.positions.push(leftPos);
+
             $(item).css('left', leftPos);
         });
     },
 
-    moveLeft(direction) {
+    moveLeft() {
         var firstElement = this.el.children(this.itemName).first();
         var firstLeft = firstElement.position()['left'];
-        this.moveItems(direction);
         var last = this.el.children(this.itemName).last();
-        last.hide()
-            .insertBefore(firstElement)
-            .css('left', firstLeft)
-            .show();
+        last.insertBefore(firstElement);
         this.pager();
     },
 
-    moveRight(direction) {
-        var lastElement = this.el.children(this.itemName).last();
+    moveRight() {
+        var children = this.el.children(this.itemName);
+        var lastElement = children.last();
         var lastLeft = lastElement.position()['left'];
-        this.moveItems(-direction);
-        var first = this.el.children(this.itemName).first();
-        first.hide();
+        var first = children.first();
         first.insertAfter(lastElement);
-        first.css('left', lastLeft).show();
         this.pager();
     },
 
     moveItems(direction) {
-        this.el.children(this.itemName).each(function() {
-            var left = parseInt($(this).css('left'));
-            $(this).css('left', left + direction);
+        var left;
+        var itemWidth = this.itemWidth;
+        this.el.children(this.itemName).each( function (index) {
+            if (!left) {
+                left = parseInt($(this).css('left'));
+            }
+            $(this).css('left', left + index * itemWidth + direction);
         });
     }
 });
-
 
 document.registerElement('as24-gallery', {
     prototype: as24gallery
