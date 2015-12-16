@@ -7,18 +7,16 @@ as24-gallery {
     position: absolute;
     top: 0;
     bottom: 0;
-
-    width: 100px;
-    &.overlay {
-      opacity: .5;
-      background-color: black;
-    }
     z-index: 1;
-    color: white;
+
+    color: #fff;
     text-align: center;
     vertical-align: middle;
-
     cursor: pointer;
+
+    &.overlay {
+      background-color: rgba(0, 0, 0, 0.5);
+    }
 
     &:before {
       //used for vertical positioning of pager
@@ -40,7 +38,8 @@ as24-gallery {
     z-index: 1;
     bottom: 0;
     left: 115px;
-    color: white;
+
+    color: #fff;
     font-size: 22px;
   }
   .placeholder {
@@ -54,7 +53,7 @@ as24-gallery {
 
     margin: 0 10px;
 
-    background: gray;
+    background: #808080;
     height: 100%;
     top: 0;
     bottom: 0;
@@ -68,13 +67,6 @@ as24-gallery {
 
     img {
       height: 100%;
-      /*
-      height: 100%;
-      width: 100%;
-      max-width: 640px;
-      max-height: 480px;
-      display: inline;
-      */
     }
   }
 }
