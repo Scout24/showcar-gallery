@@ -98,16 +98,28 @@
 	        this.el.on('touchstart', function (e) {
 	            _this.lazyLoadImages();
 	            $('as24-gallery-item', _this.el).addClass('no-transition');
-	            if ($(e.target).hasClass('right') || $(e.target).hasClass('left')) {
-	                _this.resetTouch();
-	            } else {
+	            _this.resetTouch();
+	            if (!$(e.target).hasClass('right') && !$(e.target).hasClass('left')) {
 	                _this.touchStart = _this.getTouchCoords(e);
 	                _this.touchPrev = _this.touchStart;
 	            }
 	        });
 	
 	        this.el.on('touchmove', function (e) {
+	            if (!_this.isSwiping()) {
+	                return;
+	            }
 	            var touchCoords = _this.getTouchCoords(e);
+	            var startDiffX = Math.abs(touchCoords.x - _this.touchStart.x);
+	            var startDiffY = Math.abs(touchCoords.y - _this.touchStart.y);
+	            if (startDiffX < startDiffY) {
+	                //TODO: reset item positions
+	
+	                _this.resetTouch();
+	            } else {
+	                e.preventDefault();
+	            }
+	
 	            var touchDiffX = touchCoords.x - _this.touchPrev.x;
 	            _this.touchPrev = touchCoords;
 	            _this.moveItems(touchDiffX);
@@ -115,7 +127,7 @@
 	
 	        this.el.on('touchend', function (e) {
 	            $('as24-gallery-item', _this.el).removeClass('no-transition');
-	            if (Object.keys(_this.touchStart).length === 0) {
+	            if (!_this.isSwiping()) {
 	                return;
 	            }
 	            var touchCoords = _this.getTouchCoords(e.changedTouches[0]);
@@ -273,6 +285,9 @@
 	    resetTouch: function resetTouch() {
 	        this.touchStart = {};
 	        this.touchPrev = {};
+	    },
+	    isSwiping: function isSwiping() {
+	        return Object.keys(this.touchStart).length > 0;
 	    },
 	    getTouchCoords: function getTouchCoords(e) {
 	        var touch = e.touches && e.touches[0];

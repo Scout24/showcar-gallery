@@ -48,16 +48,28 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         this.el.on('touchstart', (e) => {
             this.lazyLoadImages();
             $('as24-gallery-item', this.el).addClass('no-transition');
-            if ($(e.target).hasClass('right') || $(e.target).hasClass('left')) {
-                this.resetTouch();
-            } else {
+            this.resetTouch();
+            if (!$(e.target).hasClass('right') && !$(e.target).hasClass('left')) {
                 this.touchStart = this.getTouchCoords(e);
                 this.touchPrev = this.touchStart;
             }
         });
 
         this.el.on('touchmove', (e) => {
+            if (!this.isSwiping()) {
+                return;
+            }
             const touchCoords = this.getTouchCoords(e);
+            const startDiffX = Math.abs(touchCoords.x - this.touchStart.x);
+            const startDiffY = Math.abs(touchCoords.y - this.touchStart.y);
+            if (startDiffX < startDiffY) {
+                //TODO: reset item positions
+
+                this.resetTouch();
+            } else {
+                e.preventDefault();
+            }
+
             const touchDiffX = touchCoords.x - this.touchPrev.x;
             this.touchPrev = touchCoords;
             this.moveItems(touchDiffX);
@@ -65,7 +77,7 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
 
         this.el.on('touchend', (e) => {
             $('as24-gallery-item', this.el).removeClass('no-transition');
-            if (Object.keys(this.touchStart).length === 0) {
+            if (!this.isSwiping()) {
                 return;
             }
             const touchCoords = this.getTouchCoords(e.changedTouches[0]);
@@ -232,6 +244,9 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
     resetTouch() {
         this.touchStart = {};
         this.touchPrev = {};
+    },
+    isSwiping() {
+        return (Object.keys(this.touchStart).length > 0);
     },
     getTouchCoords(e) {
         var touch = e.touches && e.touches[0];
