@@ -193,10 +193,15 @@
 	        }
 	    },
 	    pager: function pager() {
-	        var totalNumber = this.el.children(this.itemName).length;
+	        var items = this.el.children(this.itemName);
+	        var duplicates = items.filter('.duplicate');
+	        var totalPages = items.length - duplicates.length;
+	
 	        // how to get the current Element?
-	        var currentElement = $(this.el.children(this.itemName)[2]).data('number');
-	        $('.pager', this.el).html(currentElement + '/' + totalNumber);
+	        var middleItem = Math.ceil(items.length / 2);
+	        var currentNumber = $(items[middleItem - 1]).data('number');
+	        var currentPage = currentNumber % totalPages || totalPages;
+	        $('.pager', this.el).html(currentPage + '/' + totalPages);
 	    },
 	    calculateItemWidth: function calculateItemWidth() {
 	        var firstChild = this.el.children(this.itemName).first();
