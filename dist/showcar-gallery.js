@@ -110,10 +110,16 @@
 	
 	        //register event handlers
 	        $('.left', this.el).click(function () {
-	            return _this.moveLeft(_this.itemWidth);
+	            $('as24-gallery-item', _this.el).addClass('transition');
+	            _this.moveItems(_this.itemWidth);
+	            _this.moveLeft();
+	            $('as24-gallery-item', _this.el).removeClass('transition');
 	        });
 	        $('.right', this.el).click(function () {
-	            return _this.moveRight(_this.itemWidth);
+	            $('as24-gallery-item', _this.el).addClass('transition');
+	            _this.moveItems(-_this.itemWidth);
+	            _this.moveRight();
+	            $('as24-gallery-item', _this.el).removeClass('transition');
 	        });
 	        var ts = 0;
 	        var prev = 0;
@@ -247,18 +253,11 @@
 	        });
 	    },
 	    moveLeft: function moveLeft() {
-	        var firstElement = this.el.children(this.itemName).first();
-	        var firstLeft = firstElement.position()['left'];
-	        var last = this.el.children(this.itemName).last();
-	        last.insertBefore(firstElement);
+	        this.el.children(this.itemName).last().insertBefore(this.el.children(this.itemName).first());
 	        this.pager();
 	    },
 	    moveRight: function moveRight() {
-	        var children = this.el.children(this.itemName);
-	        var lastElement = children.last();
-	        var lastLeft = lastElement.position()['left'];
-	        var first = children.first();
-	        first.insertAfter(lastElement);
+	        this.el.children(this.itemName).first().insertAfter(this.el.children(this.itemName).last());
 	        this.pager();
 	    },
 	    moveItems: function moveItems(direction) {

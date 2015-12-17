@@ -62,8 +62,18 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         }
 
         //register event handlers
-        $('.left', this.el).click(() => this.moveLeft(this.itemWidth));
-        $('.right', this.el).click(() => this.moveRight(this.itemWidth));
+        $('.left', this.el).click(() => {
+            $('as24-gallery-item', this.el).addClass('transition');
+            this.moveItems(this.itemWidth);
+            this.moveLeft();
+            $('as24-gallery-item', this.el).removeClass('transition');
+        });
+        $('.right', this.el).click(() => {
+            $('as24-gallery-item', this.el).addClass('transition');
+            this.moveItems(-this.itemWidth);
+            this.moveRight();
+            $('as24-gallery-item', this.el).removeClass('transition');
+        });
         var ts = 0;
         var prev = 0;
         this.el.on('touchstart', (e) => {
@@ -202,19 +212,12 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
     },
 
     moveLeft() {
-        var firstElement = this.el.children(this.itemName).first();
-        var firstLeft = firstElement.position()['left'];
-        var last = this.el.children(this.itemName).last();
-        last.insertBefore(firstElement);
+        this.el.children(this.itemName).last().insertBefore(this.el.children(this.itemName).first());
         this.pager();
     },
 
     moveRight() {
-        var children = this.el.children(this.itemName);
-        var lastElement = children.last();
-        var lastLeft = lastElement.position()['left'];
-        var first = children.first();
-        first.insertAfter(lastElement);
+        this.el.children(this.itemName).first().insertAfter(this.el.children(this.itemName).last());
         this.pager();
     },
 
