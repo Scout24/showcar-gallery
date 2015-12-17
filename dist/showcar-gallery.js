@@ -113,16 +113,18 @@
 	            var startDiffX = Math.abs(touchCoords.x - _this.touchStart.x);
 	            var startDiffY = Math.abs(touchCoords.y - _this.touchStart.y);
 	            if (startDiffX < startDiffY) {
-	                //TODO: reset item positions
-	
+	                $('as24-gallery-item', _this.el).removeClass('no-transition');
+	                var positions = _this.positions;
+	                _this.el.children(_this.itemName).each(function (index) {
+	                    $(this).css('left', positions[index]);
+	                });
 	                _this.resetTouch();
 	            } else {
 	                e.preventDefault();
+	                var touchDiffX = touchCoords.x - _this.touchPrev.x;
+	                _this.touchPrev = touchCoords;
+	                _this.moveItems(touchDiffX);
 	            }
-	
-	            var touchDiffX = touchCoords.x - _this.touchPrev.x;
-	            _this.touchPrev = touchCoords;
-	            _this.moveItems(touchDiffX);
 	        });
 	
 	        this.el.on('touchend', function (e) {

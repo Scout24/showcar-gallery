@@ -63,16 +63,18 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
             const startDiffX = Math.abs(touchCoords.x - this.touchStart.x);
             const startDiffY = Math.abs(touchCoords.y - this.touchStart.y);
             if (startDiffX < startDiffY) {
-                //TODO: reset item positions
-
+                $('as24-gallery-item', this.el).removeClass('no-transition');
+                var positions = this.positions;
+                this.el.children(this.itemName).each(function (index) {
+                    $(this).css('left', positions[index]);
+                });
                 this.resetTouch();
             } else {
                 e.preventDefault();
+                const touchDiffX = touchCoords.x - this.touchPrev.x;
+                this.touchPrev = touchCoords;
+                this.moveItems(touchDiffX);
             }
-
-            const touchDiffX = touchCoords.x - this.touchPrev.x;
-            this.touchPrev = touchCoords;
-            this.moveItems(touchDiffX);
         });
 
         this.el.on('touchend', (e) => {
