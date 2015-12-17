@@ -14,7 +14,6 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
             overlayWidth -= parseInt(firstChild.css('margin-left'));
         }
         $('.right, .left', this.el).css('width', overlayWidth);
-
     },
 
     init(reorder) {
@@ -85,9 +84,6 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
             this.el.children(this.itemName).each(function (index) {
                 $(this).css('left', positions[index]);
             });
-            setTimeout(() => {
-
-            }, 300);
         });
         var ts = 0;
         var prev = 0;
@@ -211,12 +207,14 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
     },
 
     moveLeft() {
-        this.el.children(this.itemName).last().insertBefore(this.el.children(this.itemName).first());
+        var items = this.el.children(this.itemName);
+        items.last().insertBefore(items.first());
         this.pager();
     },
 
     moveRight() {
-        this.el.children(this.itemName).first().insertAfter(this.el.children(this.itemName).last());
+        var items = this.el.children(this.itemName);
+        items.first().insertAfter(items.last());
         this.pager();
     },
 
