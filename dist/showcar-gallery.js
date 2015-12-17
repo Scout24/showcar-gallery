@@ -75,9 +75,8 @@
 	        this.el = $(this);
 	        this.items = this.el.children(this.itemName);
 	
-	        if (this.isEdgecase()) {
+	        if (this.items.length < 2) {
 	            this.handleEdgecases();
-	            return;
 	        }
 	
 	        this.init(true);
@@ -156,7 +155,6 @@
 	    },
 	    init: function init(reorder) {
 	        this.itemWidth = this.calculateItemWidth();
-	
 	        this.fillItems();
 	        this.positionElements(reorder);
 	        this.resizeOverlays();
@@ -199,7 +197,6 @@
 	        var duplicates = items.filter('.duplicate');
 	        var totalPages = items.length - duplicates.length;
 	
-	        // how to get the current Element?
 	        var middleItem = Math.ceil(items.length / 2);
 	        var currentNumber = $(items[middleItem - 1]).data('number');
 	        var currentPage = currentNumber % totalPages || totalPages;
@@ -207,9 +204,12 @@
 	    },
 	    calculateItemWidth: function calculateItemWidth() {
 	        var firstChild = this.items.first();
-	        var itemWidth = firstChild.width();
-	        itemWidth += parseInt(firstChild.css('margin-left'));
-	        itemWidth += parseInt(firstChild.css('margin-right'));
+	        var itemWidth = 0;
+	        if (firstChild.length > 0) {
+	            itemWidth = firstChild.width();
+	            itemWidth += parseInt(firstChild.css('margin-left'));
+	            itemWidth += parseInt(firstChild.css('margin-right'));
+	        }
 	
 	        return itemWidth;
 	    },
@@ -219,21 +219,10 @@
 	            $(item).attr('data-src', null);
 	        });
 	    },
-	    isEdgecase: function isEdgecase() {
-	        return this.items.length < 1;
-	    },
 	    handleEdgecases: function handleEdgecases() {
 	        $('.left, .right, .pager', this.el).hide();
-	
-	        switch (this.items.length) {
-	            case 0:
-	                $('.placeholder', this.el).show();
-	                break;
-	            case 1:
-	                break;
-	                var centerPos = (this.el[0].clientWidth - this.itemWidth) / 2;
-	                this.items.css('left', centerPos);
-	                break;
+	        if (this.items.length === 0) {
+	            $('.placeholder', this.el).show();
 	        }
 	    },
 	    positionElements: function positionElements(reorder) {
