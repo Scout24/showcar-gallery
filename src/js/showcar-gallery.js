@@ -6,23 +6,33 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
     duplicateClass: 'duplicate',
     positions: [],
 
+    resizeOverlays: function () {
+        var overlayWidth = 0;
+        if (this.el.children(this.itemName).length > 1) {
+            overlayWidth = this.el[0].clientWidth / 2 - this.itemWidth / 2;
+            const firstChild = this.el.children(this.itemName).first();
+            overlayWidth -= parseInt(firstChild.css('margin-left'));
+        }
+        $('.right, .left', this.el).css('width', overlayWidth);
+
+    },
+
     init(reorder) {
         this.itemWidth = this.calculateItemWidth();
 
         this.fillItems();
         this.positionElements(reorder);
 
-
         $('.right, .left', this.el).toggleClass('pagination-small', this.itemWidth >= this.el.width());
 
-        var overlayWidth = this.el[0].clientWidth / 2 - this.itemWidth / 2;
-        const firstChild = this.el.children(this.itemName).first();
-        overlayWidth -= parseInt(firstChild.css('margin-left'));
-        $('.right, .left', this.el).css('width', overlayWidth);
+        this.resizeOverlays();
     },
 
     fillItems () {
         var noOfItems = this.el.children(this.itemName).length;
+        if (noOfItems < 2) {
+            return;
+        }
         var space = this.el[0].clientWidth - noOfItems * this.itemWidth;
 
         if (space > 0) {
@@ -54,30 +64,36 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
 
         this.el = $(this);
 
-        this.init(true);
-
         if (this.isEdgecase()) {
             this.handleEdgecases();
             return;
         }
 
-        //register event handlers
+        this.init(true);
+
         $('.left', this.el).click(() => {
-            $('as24-gallery-item', this.el).addClass('transition');
-            this.moveItems(this.itemWidth);
+            var positions = this.positions;
             this.moveLeft();
-            $('as24-gallery-item', this.el).removeClass('transition');
+            this.el.children(this.itemName).each(function (index) {
+                $(this).css('left', positions[index]);
+            });
         });
         $('.right', this.el).click(() => {
-            $('as24-gallery-item', this.el).addClass('transition');
-            this.moveItems(-this.itemWidth);
+            var positions = this.positions;
             this.moveRight();
-            $('as24-gallery-item', this.el).removeClass('transition');
+
+            this.el.children(this.itemName).each(function (index) {
+                $(this).css('left', positions[index]);
+            });
+            setTimeout(() => {
+
+            }, 300);
         });
         var ts = 0;
         var prev = 0;
         this.el.on('touchstart', (e) => {
             this.lazyLoadImages();
+            $('as24-gallery-item', this.el).addClass('no-transition');
             if ($(e.target).hasClass('right') || $(e.target).hasClass('left')) {
                 ts = null;
             } else {
@@ -94,6 +110,7 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         });
 
         this.el.on('touchend', (e) => {
+            $('as24-gallery-item', this.el).removeClass('no-transition');
             if (ts === null) {
                 return;
             }
@@ -109,21 +126,13 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
                     this.moveLeft();
                 }
             }
-            // add transition class
-            $('as24-gallery-item', this.el).addClass('transition');
-            // go last steps
             var positions = this.positions;
             this.el.children(this.itemName).each(function (index) {
                 $(this).css('left', positions[index]);
             });
-            // remove transition class
-            $('as24-gallery-item', this.el).removeClass('transition');
-
-
         });
         this.pager();
     },
-
 
     pager() {
         var totalNumber = this.el.children(this.itemName).length;
@@ -149,7 +158,7 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
     },
 
     isEdgecase() {
-        return this.el.children(this.itemName).length < 3;
+        return this.el.children(this.itemName).length < 1;
     },
 
     handleEdgecases() {
@@ -157,23 +166,13 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
 
         switch (this.el.children(this.itemName).length) {
             case 0:
-                // no image
-                // display dummy element
                 $('.placeholder', this.el).show();
                 break;
             case 1:
-                // one image
-                // center aligned
+                break;
                 var item = this.el.children(this.itemName);
                 var centerPos = (this.el[0].clientWidth - this.itemWidth) / 2;
                 $(item).css('left', centerPos);
-                break;
-            case 2:
-                // two images
-                // left/right aligned
-                this.el.children(this.itemName).each((index, item)  => {
-                    $(item).css('left', index * this.itemWidth);
-                });
                 break;
         }
     },

@@ -54,6 +54,16 @@
 	    duplicateClass: 'duplicate',
 	    positions: [],
 	
+	    resizeOverlays: function resizeOverlays() {
+	        var overlayWidth = 0;
+	        if (this.el.children(this.itemName).length > 1) {
+	            overlayWidth = this.el[0].clientWidth / 2 - this.itemWidth / 2;
+	            var firstChild = this.el.children(this.itemName).first();
+	            overlayWidth -= parseInt(firstChild.css('margin-left'));
+	        }
+	        $('.right, .left', this.el).css('width', overlayWidth);
+	    },
+	
 	    init: function init(reorder) {
 	        this.itemWidth = this.calculateItemWidth();
 	
@@ -62,13 +72,13 @@
 	
 	        $('.right, .left', this.el).toggleClass('pagination-small', this.itemWidth >= this.el.width());
 	
-	        var overlayWidth = this.el[0].clientWidth / 2 - this.itemWidth / 2;
-	        var firstChild = this.el.children(this.itemName).first();
-	        overlayWidth -= parseInt(firstChild.css('margin-left'));
-	        $('.right, .left', this.el).css('width', overlayWidth);
+	        this.resizeOverlays();
 	    },
 	    fillItems: function fillItems() {
 	        var noOfItems = this.el.children(this.itemName).length;
+	        if (noOfItems < 2) {
+	            return;
+	        }
 	        var space = this.el[0].clientWidth - noOfItems * this.itemWidth;
 	
 	        if (space > 0) {
@@ -101,30 +111,34 @@
 	
 	        this.el = $(this);
 	
-	        this.init(true);
-	
 	        if (this.isEdgecase()) {
 	            this.handleEdgecases();
 	            return;
 	        }
 	
-	        //register event handlers
+	        this.init(true);
+	
 	        $('.left', this.el).click(function () {
-	            $('as24-gallery-item', _this.el).addClass('transition');
-	            _this.moveItems(_this.itemWidth);
+	            var positions = _this.positions;
 	            _this.moveLeft();
-	            $('as24-gallery-item', _this.el).removeClass('transition');
+	            _this.el.children(_this.itemName).each(function (index) {
+	                $(this).css('left', positions[index]);
+	            });
 	        });
 	        $('.right', this.el).click(function () {
-	            $('as24-gallery-item', _this.el).addClass('transition');
-	            _this.moveItems(-_this.itemWidth);
+	            var positions = _this.positions;
 	            _this.moveRight();
-	            $('as24-gallery-item', _this.el).removeClass('transition');
+	
+	            _this.el.children(_this.itemName).each(function (index) {
+	                $(this).css('left', positions[index]);
+	            });
+	            setTimeout(function () {}, 300);
 	        });
 	        var ts = 0;
 	        var prev = 0;
 	        this.el.on('touchstart', function (e) {
 	            _this.lazyLoadImages();
+	            $('as24-gallery-item', _this.el).addClass('no-transition');
 	            if ($(e.target).hasClass('right') || $(e.target).hasClass('left')) {
 	                ts = null;
 	            } else {
@@ -141,6 +155,7 @@
 	        });
 	
 	        this.el.on('touchend', function (e) {
+	            $('as24-gallery-item', _this.el).removeClass('no-transition');
 	            if (ts === null) {
 	                return;
 	            }
@@ -156,15 +171,10 @@
 	                    _this.moveLeft();
 	                }
 	            }
-	            // add transition class
-	            $('as24-gallery-item', _this.el).addClass('transition');
-	            // go last steps
 	            var positions = _this.positions;
 	            _this.el.children(_this.itemName).each(function (index) {
 	                $(this).css('left', positions[index]);
 	            });
-	            // remove transition class
-	            $('as24-gallery-item', _this.el).removeClass('transition');
 	        });
 	        this.pager();
 	    },
@@ -189,37 +199,25 @@
 	        });
 	    },
 	    isEdgecase: function isEdgecase() {
-	        return this.el.children(this.itemName).length < 3;
+	        return this.el.children(this.itemName).length < 1;
 	    },
 	    handleEdgecases: function handleEdgecases() {
-	        var _this2 = this;
-	
 	        $('.left, .right, .pager', this.el).hide();
 	
 	        switch (this.el.children(this.itemName).length) {
 	            case 0:
-	                // no image
-	                // display dummy element
 	                $('.placeholder', this.el).show();
 	                break;
 	            case 1:
-	                // one image
-	                // center aligned
+	                break;
 	                var item = this.el.children(this.itemName);
 	                var centerPos = (this.el[0].clientWidth - this.itemWidth) / 2;
 	                $(item).css('left', centerPos);
 	                break;
-	            case 2:
-	                // two images
-	                // left/right aligned
-	                this.el.children(this.itemName).each(function (index, item) {
-	                    $(item).css('left', index * _this2.itemWidth);
-	                });
-	                break;
 	        }
 	    },
 	    positionElements: function positionElements(reorder) {
-	        var _this3 = this;
+	        var _this2 = this;
 	
 	        var itemCount = this.el.children(this.itemName).length;
 	        var middleItem = Math.ceil(itemCount / 2);
@@ -228,7 +226,7 @@
 	        if (reorder) {
 	            this.el.children(this.itemName).each(function (index, item) {
 	                if (index <= itemCount / 2) {
-	                    _this3.el.append(item);
+	                    _this2.el.append(item);
 	                }
 	            });
 	        }
@@ -237,9 +235,9 @@
 	
 	        this.el.children(this.itemName).each(function (index, item) {
 	            var indexDiff = index + 1 - middleItem;
-	            var leftPos = centerPos + indexDiff * _this3.itemWidth;
+	            var leftPos = centerPos + indexDiff * _this2.itemWidth;
 	
-	            if (leftPos + _this3.itemWidth > 0 && leftPos < _this3.el.width()) {
+	            if (leftPos + _this2.itemWidth > 0 && leftPos < _this2.el.width()) {
 	                var image = $('[data-src]', item);
 	                if (image.length > 0) {
 	                    image[0].src = image.data('src');
@@ -247,7 +245,7 @@
 	                }
 	            }
 	
-	            _this3.positions.push(leftPos);
+	            _this2.positions.push(leftPos);
 	
 	            $(item).css('left', leftPos);
 	        });
