@@ -1,15 +1,14 @@
 body {
-  margin: 1000px 50px;
-  min-height: 5000px;
+  margin: 50px;
 }
 
 as24-gallery {
-  height: 480px;
+  height: 240px;
   width: 100%;
   border: 2px solid blue;
 
   as24-gallery-item {
-    width: 640px;
+    width: 320px;
   }
 }
 
