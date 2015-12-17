@@ -3,6 +3,7 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
     el: null,
     itemWidth: 0,
     itemName: 'as24-gallery-item',
+    items: null,
     duplicateClass: 'duplicate',
     positions: [],
     touchStart: {},
@@ -22,6 +23,7 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         });
 
         this.el = $(this);
+        this.items = this.el.children(this.itemName);
 
         if (this.isEdgecase()) {
             this.handleEdgecases();
@@ -33,7 +35,7 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         $('.left', this.el).click(() => {
             var positions = this.positions;
             this.moveLeft();
-            this.el.children(this.itemName).each(function (index) {
+            this.items.each(function (index) {
                 $(this).css('left', positions[index]);
             });
         });
@@ -41,7 +43,7 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
             var positions = this.positions;
             this.moveRight();
 
-            this.el.children(this.itemName).each(function (index) {
+            this.items.each(function (index) {
                 $(this).css('left', positions[index]);
             });
         });
@@ -65,7 +67,7 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
             if (startDiffX < startDiffY) {
                 $('as24-gallery-item', this.el).removeClass('no-transition');
                 var positions = this.positions;
-                this.el.children(this.itemName).each(function (index) {
+                this.items.each(function (index) {
                     $(this).css('left', positions[index]);
                 });
                 this.resetTouch();
@@ -95,7 +97,7 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
                 }
             }
             var positions = this.positions;
-            this.el.children(this.itemName).each(function (index) {
+            this.items.each(function (index) {
                 $(this).css('left', positions[index]);
             });
         });
@@ -115,16 +117,16 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         var overlays = $('.right, .left', this.el);
         overlays.toggleClass('pagination-small', this.itemWidth >= this.el.width());
         var overlayWidth = 0;
-        if (this.el.children(this.itemName).length > 1) {
+        if (this.items.length > 1) {
             overlayWidth = this.el[0].clientWidth / 2 - this.itemWidth / 2;
-            const firstChild = this.el.children(this.itemName).first();
+            const firstChild = this.items.first();
             overlayWidth -= parseInt(firstChild.css('margin-left'));
         }
         $('.right, .left', this.el).css('width', overlayWidth);
     },
 
     fillItems () {
-        var noOfItems = this.el.children(this.itemName).length;
+        var noOfItems = this.items.length;
         if (noOfItems < 2) {
             return;
         }
@@ -145,7 +147,7 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
     },
 
     pager() {
-        var items = this.el.children(this.itemName);
+        var items = this.items;
         var duplicates = items.filter('.duplicate');
         var totalPages = items.length - duplicates.length;
 
@@ -157,7 +159,7 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
     },
 
     calculateItemWidth() {
-        const firstChild = this.el.children(this.itemName).first();
+        const firstChild = this.items.first();
         var itemWidth = firstChild.width();
         itemWidth += parseInt(firstChild.css('margin-left'));
         itemWidth += parseInt(firstChild.css('margin-right'));
@@ -173,41 +175,41 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
     },
 
     isEdgecase() {
-        return this.el.children(this.itemName).length < 1;
+        return this.items.length < 1;
     },
 
     handleEdgecases() {
         $('.left, .right, .pager', this.el).hide();
 
-        switch (this.el.children(this.itemName).length) {
+        switch (this.items.length) {
             case 0:
                 $('.placeholder', this.el).show();
                 break;
             case 1:
                 break;
-                var item = this.el.children(this.itemName);
                 var centerPos = (this.el[0].clientWidth - this.itemWidth) / 2;
-                $(item).css('left', centerPos);
+                this.items.css('left', centerPos);
                 break;
         }
     },
 
     positionElements(reorder) {
-        const itemCount = this.el.children(this.itemName).length;
+        const itemCount = this.items.length;
         const middleItem = Math.ceil(itemCount / 2);
         const centerPos = (this.el[0].clientWidth - this.itemWidth) / 2;
 
         if (reorder) {
-            this.el.children(this.itemName).each((index, item) => {
+            this.items.each((index, item) => {
                 if (index <= itemCount / 2) {
                     this.el.append(item);
                 }
             });
+            this.items = this.el.children(this.itemName);
         }
 
         this.positions = [];
 
-        this.el.children(this.itemName).each((index, item) => {
+        this.items.each((index, item) => {
             var indexDiff = ((index + 1) - middleItem);
             var leftPos = centerPos + (indexDiff * this.itemWidth);
 
@@ -226,21 +228,21 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
     },
 
     moveLeft() {
-        var items = this.el.children(this.itemName);
-        items.last().insertBefore(items.first());
+        this.items.last().insertBefore(this.items.first());
+        this.items = this.el.children(this.itemName);
         this.pager();
     },
 
     moveRight() {
-        var items = this.el.children(this.itemName);
-        items.first().insertAfter(items.last());
+        this.items.first().insertAfter(this.items.last());
+        this.items = this.el.children(this.itemName);
         this.pager();
     },
 
     moveItems(direction) {
         var left;
         var itemWidth = this.itemWidth;
-        this.el.children(this.itemName).each( function (index) {
+        this.items.each( function (index) {
             if (!left) {
                 left = parseInt($(this).css('left'));
             }

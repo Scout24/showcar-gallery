@@ -51,6 +51,7 @@
 	    el: null,
 	    itemWidth: 0,
 	    itemName: 'as24-gallery-item',
+	    items: null,
 	    duplicateClass: 'duplicate',
 	    positions: [],
 	    touchStart: {},
@@ -72,6 +73,7 @@
 	        });
 	
 	        this.el = $(this);
+	        this.items = this.el.children(this.itemName);
 	
 	        if (this.isEdgecase()) {
 	            this.handleEdgecases();
@@ -83,7 +85,7 @@
 	        $('.left', this.el).click(function () {
 	            var positions = _this.positions;
 	            _this.moveLeft();
-	            _this.el.children(_this.itemName).each(function (index) {
+	            _this.items.each(function (index) {
 	                $(this).css('left', positions[index]);
 	            });
 	        });
@@ -91,7 +93,7 @@
 	            var positions = _this.positions;
 	            _this.moveRight();
 	
-	            _this.el.children(_this.itemName).each(function (index) {
+	            _this.items.each(function (index) {
 	                $(this).css('left', positions[index]);
 	            });
 	        });
@@ -115,7 +117,7 @@
 	            if (startDiffX < startDiffY) {
 	                $('as24-gallery-item', _this.el).removeClass('no-transition');
 	                var positions = _this.positions;
-	                _this.el.children(_this.itemName).each(function (index) {
+	                _this.items.each(function (index) {
 	                    $(this).css('left', positions[index]);
 	                });
 	                _this.resetTouch();
@@ -145,7 +147,7 @@
 	                }
 	            }
 	            var positions = _this.positions;
-	            _this.el.children(_this.itemName).each(function (index) {
+	            _this.items.each(function (index) {
 	                $(this).css('left', positions[index]);
 	            });
 	        });
@@ -164,16 +166,16 @@
 	        var overlays = $('.right, .left', this.el);
 	        overlays.toggleClass('pagination-small', this.itemWidth >= this.el.width());
 	        var overlayWidth = 0;
-	        if (this.el.children(this.itemName).length > 1) {
+	        if (this.items.length > 1) {
 	            overlayWidth = this.el[0].clientWidth / 2 - this.itemWidth / 2;
-	            var firstChild = this.el.children(this.itemName).first();
+	            var firstChild = this.items.first();
 	            overlayWidth -= parseInt(firstChild.css('margin-left'));
 	        }
 	        $('.right, .left', this.el).css('width', overlayWidth);
 	    },
 	
 	    fillItems: function fillItems() {
-	        var noOfItems = this.el.children(this.itemName).length;
+	        var noOfItems = this.items.length;
 	        if (noOfItems < 2) {
 	            return;
 	        }
@@ -193,7 +195,7 @@
 	        }
 	    },
 	    pager: function pager() {
-	        var items = this.el.children(this.itemName);
+	        var items = this.items;
 	        var duplicates = items.filter('.duplicate');
 	        var totalPages = items.length - duplicates.length;
 	
@@ -204,7 +206,7 @@
 	        $('.pager', this.el).html(currentPage + '/' + totalPages);
 	    },
 	    calculateItemWidth: function calculateItemWidth() {
-	        var firstChild = this.el.children(this.itemName).first();
+	        var firstChild = this.items.first();
 	        var itemWidth = firstChild.width();
 	        itemWidth += parseInt(firstChild.css('margin-left'));
 	        itemWidth += parseInt(firstChild.css('margin-right'));
@@ -218,41 +220,41 @@
 	        });
 	    },
 	    isEdgecase: function isEdgecase() {
-	        return this.el.children(this.itemName).length < 1;
+	        return this.items.length < 1;
 	    },
 	    handleEdgecases: function handleEdgecases() {
 	        $('.left, .right, .pager', this.el).hide();
 	
-	        switch (this.el.children(this.itemName).length) {
+	        switch (this.items.length) {
 	            case 0:
 	                $('.placeholder', this.el).show();
 	                break;
 	            case 1:
 	                break;
-	                var item = this.el.children(this.itemName);
 	                var centerPos = (this.el[0].clientWidth - this.itemWidth) / 2;
-	                $(item).css('left', centerPos);
+	                this.items.css('left', centerPos);
 	                break;
 	        }
 	    },
 	    positionElements: function positionElements(reorder) {
 	        var _this2 = this;
 	
-	        var itemCount = this.el.children(this.itemName).length;
+	        var itemCount = this.items.length;
 	        var middleItem = Math.ceil(itemCount / 2);
 	        var centerPos = (this.el[0].clientWidth - this.itemWidth) / 2;
 	
 	        if (reorder) {
-	            this.el.children(this.itemName).each(function (index, item) {
+	            this.items.each(function (index, item) {
 	                if (index <= itemCount / 2) {
 	                    _this2.el.append(item);
 	                }
 	            });
+	            this.items = this.el.children(this.itemName);
 	        }
 	
 	        this.positions = [];
 	
-	        this.el.children(this.itemName).each(function (index, item) {
+	        this.items.each(function (index, item) {
 	            var indexDiff = index + 1 - middleItem;
 	            var leftPos = centerPos + indexDiff * _this2.itemWidth;
 	
@@ -270,19 +272,19 @@
 	        });
 	    },
 	    moveLeft: function moveLeft() {
-	        var items = this.el.children(this.itemName);
-	        items.last().insertBefore(items.first());
+	        this.items.last().insertBefore(this.items.first());
+	        this.items = this.el.children(this.itemName);
 	        this.pager();
 	    },
 	    moveRight: function moveRight() {
-	        var items = this.el.children(this.itemName);
-	        items.first().insertAfter(items.last());
+	        this.items.first().insertAfter(this.items.last());
+	        this.items = this.el.children(this.itemName);
 	        this.pager();
 	    },
 	    moveItems: function moveItems(direction) {
 	        var left;
 	        var itemWidth = this.itemWidth;
-	        this.el.children(this.itemName).each(function (index) {
+	        this.items.each(function (index) {
 	            if (!left) {
 	                left = parseInt($(this).css('left'));
 	            }
