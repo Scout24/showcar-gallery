@@ -53,47 +53,9 @@
 	    itemName: 'as24-gallery-item',
 	    duplicateClass: 'duplicate',
 	    positions: [],
+	    touchStart: {},
+	    touchPrev: {},
 	
-	    resizeOverlays: function resizeOverlays() {
-	        var overlayWidth = 0;
-	        if (this.el.children(this.itemName).length > 1) {
-	            overlayWidth = this.el[0].clientWidth / 2 - this.itemWidth / 2;
-	            var firstChild = this.el.children(this.itemName).first();
-	            overlayWidth -= parseInt(firstChild.css('margin-left'));
-	        }
-	        $('.right, .left', this.el).css('width', overlayWidth);
-	    },
-	
-	    init: function init(reorder) {
-	        this.itemWidth = this.calculateItemWidth();
-	
-	        this.fillItems();
-	        this.positionElements(reorder);
-	
-	        $('.right, .left', this.el).toggleClass('pagination-small', this.itemWidth >= this.el.width());
-	
-	        this.resizeOverlays();
-	    },
-	    fillItems: function fillItems() {
-	        var noOfItems = this.el.children(this.itemName).length;
-	        if (noOfItems < 2) {
-	            return;
-	        }
-	        var space = this.el[0].clientWidth - noOfItems * this.itemWidth;
-	
-	        if (space > 0) {
-	            var numberOfItemsToCreate = Math.ceil(Math.ceil(space / this.itemWidth) / noOfItems) * noOfItems;
-	            var index = noOfItems;
-	            for (var i = 1; i <= numberOfItemsToCreate; i++) {
-	                var dataNo = i % noOfItems;
-	                dataNo = dataNo || noOfItems;
-	                index += 1;
-	                var el = $('[data-number="' + dataNo + '"').clone().data('number', index).addClass(this.duplicateClass);
-	                var target = $('[data-number="' + (index - 1) + '"]');
-	                target.after(el);
-	            }
-	        }
-	    },
 	    createdCallback: function createdCallback() {
 	        var _this = this;
 	
@@ -132,35 +94,32 @@
 	            _this.el.children(_this.itemName).each(function (index) {
 	                $(this).css('left', positions[index]);
 	            });
-	            setTimeout(function () {}, 300);
 	        });
-	        var ts = 0;
-	        var prev = 0;
 	        this.el.on('touchstart', function (e) {
 	            _this.lazyLoadImages();
 	            $('as24-gallery-item', _this.el).addClass('no-transition');
 	            if ($(e.target).hasClass('right') || $(e.target).hasClass('left')) {
-	                ts = null;
+	                _this.resetTouch();
 	            } else {
-	                ts = e.touches[0].clientX;
-	                prev = ts;
+	                _this.touchStart = _this.getTouchCoords(e);
+	                _this.touchPrev = _this.touchStart;
 	            }
 	        });
-	        this.el.on('click', this.lazyLoadImages);
 	
 	        this.el.on('touchmove', function (e) {
-	            var touchDiffX = e.changedTouches[0].clientX - prev;
-	            prev = e.changedTouches[0].clientX;
+	            var touchCoords = _this.getTouchCoords(e);
+	            var touchDiffX = touchCoords.x - _this.touchPrev.x;
+	            _this.touchPrev = touchCoords;
 	            _this.moveItems(touchDiffX);
 	        });
 	
 	        this.el.on('touchend', function (e) {
 	            $('as24-gallery-item', _this.el).removeClass('no-transition');
-	            if (ts === null) {
+	            if (Object.keys(_this.touchStart).length === 0) {
 	                return;
 	            }
-	            // reorder
-	            var touchDiffX = ts - e.changedTouches[0].clientX;
+	            var touchCoords = _this.getTouchCoords(e.changedTouches[0]);
+	            var touchDiffX = _this.touchStart.x - touchCoords.x;
 	            var absTouchDiffX = Math.abs(touchDiffX);
 	            var howMany = Math.ceil(absTouchDiffX / _this.itemWidth);
 	
@@ -176,7 +135,48 @@
 	                $(this).css('left', positions[index]);
 	            });
 	        });
+	        this.el.on('click', this.lazyLoadImages);
 	        this.pager();
+	    },
+	    init: function init(reorder) {
+	        this.itemWidth = this.calculateItemWidth();
+	
+	        this.fillItems();
+	        this.positionElements(reorder);
+	        this.resizeOverlays();
+	    },
+	
+	    resizeOverlays: function resizeOverlays() {
+	        var overlays = $('.right, .left', this.el);
+	        overlays.toggleClass('pagination-small', this.itemWidth >= this.el.width());
+	        var overlayWidth = 0;
+	        if (this.el.children(this.itemName).length > 1) {
+	            overlayWidth = this.el[0].clientWidth / 2 - this.itemWidth / 2;
+	            var firstChild = this.el.children(this.itemName).first();
+	            overlayWidth -= parseInt(firstChild.css('margin-left'));
+	        }
+	        $('.right, .left', this.el).css('width', overlayWidth);
+	    },
+	
+	    fillItems: function fillItems() {
+	        var noOfItems = this.el.children(this.itemName).length;
+	        if (noOfItems < 2) {
+	            return;
+	        }
+	        var space = this.el[0].clientWidth - noOfItems * this.itemWidth;
+	
+	        if (space > 0) {
+	            var numberOfItemsToCreate = Math.ceil(Math.ceil(space / this.itemWidth) / noOfItems) * noOfItems;
+	            var index = noOfItems;
+	            for (var i = 1; i <= numberOfItemsToCreate; i++) {
+	                var dataNo = i % noOfItems;
+	                dataNo = dataNo || noOfItems;
+	                index += 1;
+	                var el = $('[data-number="' + dataNo + '"').clone().data('number', index).addClass(this.duplicateClass);
+	                var target = $('[data-number="' + (index - 1) + '"]');
+	                target.after(el);
+	            }
+	        }
 	    },
 	    pager: function pager() {
 	        var totalNumber = this.el.children(this.itemName).length;
@@ -251,11 +251,13 @@
 	        });
 	    },
 	    moveLeft: function moveLeft() {
-	        this.el.children(this.itemName).last().insertBefore(this.el.children(this.itemName).first());
+	        var items = this.el.children(this.itemName);
+	        items.last().insertBefore(items.first());
 	        this.pager();
 	    },
 	    moveRight: function moveRight() {
-	        this.el.children(this.itemName).first().insertAfter(this.el.children(this.itemName).last());
+	        var items = this.el.children(this.itemName);
+	        items.first().insertAfter(items.last());
 	        this.pager();
 	    },
 	    moveItems: function moveItems(direction) {
@@ -267,6 +269,18 @@
 	            }
 	            $(this).css('left', left + index * itemWidth + direction);
 	        });
+	    },
+	    resetTouch: function resetTouch() {
+	        this.touchStart = {};
+	        this.touchPrev = {};
+	    },
+	    getTouchCoords: function getTouchCoords(e) {
+	        var touch = e.touches && e.touches[0];
+	
+	        return {
+	            x: e.clientX || touch && touch.clientX,
+	            y: e.clientY || touch && touch.clientY
+	        };
 	    }
 	});
 	

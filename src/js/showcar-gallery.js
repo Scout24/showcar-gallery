@@ -5,48 +5,8 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
     itemName: 'as24-gallery-item',
     duplicateClass: 'duplicate',
     positions: [],
-
-    resizeOverlays: function () {
-        var overlayWidth = 0;
-        if (this.el.children(this.itemName).length > 1) {
-            overlayWidth = this.el[0].clientWidth / 2 - this.itemWidth / 2;
-            const firstChild = this.el.children(this.itemName).first();
-            overlayWidth -= parseInt(firstChild.css('margin-left'));
-        }
-        $('.right, .left', this.el).css('width', overlayWidth);
-    },
-
-    init(reorder) {
-        this.itemWidth = this.calculateItemWidth();
-
-        this.fillItems();
-        this.positionElements(reorder);
-
-        $('.right, .left', this.el).toggleClass('pagination-small', this.itemWidth >= this.el.width());
-
-        this.resizeOverlays();
-    },
-
-    fillItems () {
-        var noOfItems = this.el.children(this.itemName).length;
-        if (noOfItems < 2) {
-            return;
-        }
-        var space = this.el[0].clientWidth - noOfItems * this.itemWidth;
-
-        if (space > 0) {
-            var numberOfItemsToCreate = Math.ceil(Math.ceil(space / this.itemWidth) / noOfItems) * noOfItems;
-            var index = noOfItems;
-            for (var i = 1; i <= numberOfItemsToCreate; i++) {
-                var dataNo = i % noOfItems;
-                dataNo = dataNo || noOfItems;
-                index += 1;
-                var el = $('[data-number="' + dataNo + '"').clone().data('number', index).addClass(this.duplicateClass);
-                var target = $('[data-number="' + (index - 1) + '"]');
-                target.after(el);
-            }
-        }
-    },
+    touchStart: {},
+    touchPrev: {},
 
     createdCallback () {
         var handler,
@@ -85,33 +45,31 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
                 $(this).css('left', positions[index]);
             });
         });
-        var ts = 0;
-        var prev = 0;
         this.el.on('touchstart', (e) => {
             this.lazyLoadImages();
             $('as24-gallery-item', this.el).addClass('no-transition');
             if ($(e.target).hasClass('right') || $(e.target).hasClass('left')) {
-                ts = null;
+                this.resetTouch();
             } else {
-                ts = e.touches[0].clientX;
-                prev = ts;
+                this.touchStart = this.getTouchCoords(e);
+                this.touchPrev = this.touchStart;
             }
         });
-        this.el.on('click', this.lazyLoadImages);
 
         this.el.on('touchmove', (e) => {
-            var touchDiffX = e.changedTouches[0].clientX - prev;
-            prev = e.changedTouches[0].clientX;
+            const touchCoords = this.getTouchCoords(e);
+            const touchDiffX = touchCoords.x - this.touchPrev.x;
+            this.touchPrev = touchCoords;
             this.moveItems(touchDiffX);
         });
 
         this.el.on('touchend', (e) => {
             $('as24-gallery-item', this.el).removeClass('no-transition');
-            if (ts === null) {
+            if (Object.keys(this.touchStart).length === 0) {
                 return;
             }
-            // reorder
-            var touchDiffX = ts - e.changedTouches[0].clientX;
+            const touchCoords = this.getTouchCoords(e.changedTouches[0]);
+            var touchDiffX = this.touchStart.x - touchCoords.x;
             var absTouchDiffX = Math.abs(touchDiffX);
             var howMany = Math.ceil(absTouchDiffX / this.itemWidth);
 
@@ -127,7 +85,49 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
                 $(this).css('left', positions[index]);
             });
         });
+        this.el.on('click', this.lazyLoadImages);
         this.pager();
+    },
+
+    init(reorder) {
+        this.itemWidth = this.calculateItemWidth();
+
+        this.fillItems();
+        this.positionElements(reorder);
+        this.resizeOverlays();
+    },
+
+    resizeOverlays: function () {
+        var overlays = $('.right, .left', this.el);
+        overlays.toggleClass('pagination-small', this.itemWidth >= this.el.width());
+        var overlayWidth = 0;
+        if (this.el.children(this.itemName).length > 1) {
+            overlayWidth = this.el[0].clientWidth / 2 - this.itemWidth / 2;
+            const firstChild = this.el.children(this.itemName).first();
+            overlayWidth -= parseInt(firstChild.css('margin-left'));
+        }
+        $('.right, .left', this.el).css('width', overlayWidth);
+    },
+
+    fillItems () {
+        var noOfItems = this.el.children(this.itemName).length;
+        if (noOfItems < 2) {
+            return;
+        }
+        var space = this.el[0].clientWidth - noOfItems * this.itemWidth;
+
+        if (space > 0) {
+            var numberOfItemsToCreate = Math.ceil(Math.ceil(space / this.itemWidth) / noOfItems) * noOfItems;
+            var index = noOfItems;
+            for (var i = 1; i <= numberOfItemsToCreate; i++) {
+                var dataNo = i % noOfItems;
+                dataNo = dataNo || noOfItems;
+                index += 1;
+                var el = $('[data-number="' + dataNo + '"').clone().data('number', index).addClass(this.duplicateClass);
+                var target = $('[data-number="' + (index - 1) + '"]');
+                target.after(el);
+            }
+        }
     },
 
     pager() {
@@ -227,6 +227,19 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
             }
             $(this).css('left', left + index * itemWidth + direction);
         });
+    },
+
+    resetTouch() {
+        this.touchStart = {};
+        this.touchPrev = {};
+    },
+    getTouchCoords(e) {
+        var touch = e.touches && e.touches[0];
+
+        return {
+            x: e.clientX || (touch && touch.clientX),
+            y: e.clientY || (touch && touch.clientY)
+        };
     }
 });
 
