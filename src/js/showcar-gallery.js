@@ -113,14 +113,16 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
 
     resizeOverlays: function () {
         var overlays = $('.right, .left', this.el);
-        overlays.toggleClass('pagination-small', this.itemWidth >= this.el.width());
+        var overlayMinWidth = parseInt(overlays.css('min-width'));
+        overlayMinWidth += parseInt(this.items.first().css('margin-left'));
+        overlays.toggleClass('pagination-small', (this.itemWidth + 2 * overlayMinWidth) >= this.el.width());
         var overlayWidth = 0;
         if (this.items.length > 1) {
             overlayWidth = this.el[0].clientWidth / 2 - this.itemWidth / 2;
             const firstChild = this.items.first();
             overlayWidth -= parseInt(firstChild.css('margin-left'));
         }
-        $('.right, .left', this.el).css('width', overlayWidth);
+        overlays.css('width', overlayWidth);
     },
 
     fillItems () {
