@@ -64,7 +64,10 @@
 	        var handler,
 	            timeout = 500;
 	
-	        this.numberOfItemsToPreload = $(this).data('preload-items');
+	        var preload = $(this).data('preload-items');
+	        if (preload) {
+	            this.numberOfItemsToPreload = $(this).data('preload-items');
+	        }
 	
 	        $(window).on('resize', function () {
 	            if (handler) {
