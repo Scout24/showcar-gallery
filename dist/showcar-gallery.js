@@ -64,6 +64,8 @@
 	        var handler,
 	            timeout = 500;
 	
+	        this.numberOfItemsToPreload = $(this).data('preload-items');
+	
 	        $(window).on('resize', function () {
 	            if (handler) {
 	                clearTimeout(handler);
@@ -75,6 +77,11 @@
 	
 	        this.el = $(this);
 	        this.items = this.el.children(this.itemName);
+	
+	        // do this synchronously to omit side effects
+	        for (var i = 1; i <= this.items.length; i++) {
+	            $(this.items[i]).attr('data-number', i);
+	        }
 	
 	        if (this.items.length < 2) {
 	            this.handleEdgecases();
