@@ -8,10 +8,16 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
     positions: [],
     touchStart: {},
     touchPrev: {},
+    numberOfItemsToPreload: 2,
 
     createdCallback () {
         var handler,
             timeout = 500;
+
+        var preload = $(this).data('preload-items');
+        if (preload) {
+            this.numberOfItemsToPreload = $(this).data('preload-items');
+        }
 
         $(window).on('resize', () => {
             if(handler) {
@@ -25,6 +31,11 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         this.el = $(this);
         this.items = this.el.children(this.itemName);
 
+        // do this synchronously to omit side effects
+        for (var i = 1; i <= this.items.length; i++) {
+            $(this.items[i]).attr('data-number', i);
+        }
+
         if (this.items.length < 2) {
             this.handleEdgecases();
         }
@@ -37,6 +48,7 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
             this.items.each(function (index) {
                 $(this).css('left', positions[index]);
             });
+            this.load();
         });
         $('.right', this.el).click(() => {
             var positions = this.positions;
@@ -45,9 +57,9 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
             this.items.each(function (index) {
                 $(this).css('left', positions[index]);
             });
+            this.load();
         });
         this.el.on('touchstart', (e) => {
-            this.lazyLoadImages();
             $('as24-gallery-item', this.el).addClass('no-transition');
             this.resetTouch();
             if (!$(e.target).hasClass('right') && !$(e.target).hasClass('left')) {
@@ -88,11 +100,14 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
             var absTouchDiffX = Math.abs(touchDiffX);
             var howMany = Math.ceil(absTouchDiffX / this.itemWidth);
 
+            var direction;
             for (var i = 0; i < howMany; i++) {
                 if (touchDiffX > 0) {
                     this.moveRight();
+                    this.load()
                 } else if (touchDiffX < 0) {
                     this.moveLeft();
+                    this.load();
                 }
             }
             var positions = this.positions;
@@ -100,7 +115,6 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
                 $(this).css('left', positions[index]);
             });
         });
-        this.el.on('click', this.lazyLoadImages);
         this.pager();
     },
 
@@ -169,14 +183,6 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         return itemWidth;
     },
 
-    lazyLoadImages() {
-        $('[data-src]', this.el).each(function (index, item) {
-            item.src = $(item).data('src');
-            $(item).attr('data-src', null);
-        });
-    },
-
-
     handleEdgecases() {
         $('.left, .right, .pager', this.el).hide();
         if (this.items.length === 0) {
@@ -204,17 +210,30 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
             var indexDiff = ((index + 1) - middleItem);
             var leftPos = centerPos + (indexDiff * this.itemWidth);
 
-            if (leftPos + this.itemWidth > 0 && leftPos < this.el.width()) {
+            this.positions.push(leftPos);
+
+            $(item).css('left', leftPos);
+        });
+
+
+        this.load();
+    },
+
+    load() {
+        const itemCount = this.items.length;
+        const middleItem = Math.ceil(itemCount / 2);
+        const centerPos = (this.el[0].clientWidth - this.itemWidth) / 2;
+        this.items.each((index, item) => {
+            var indexDiff = ((index + 1) - middleItem);
+            var leftPos = centerPos + (indexDiff * this.itemWidth);
+
+            if (leftPos + this.itemWidth + (this.numberOfItemsToPreload * this.itemWidth) > 0 && leftPos - (this.numberOfItemsToPreload * this.itemWidth) < this.el.width()) {
                 var image = $('[data-src]', item);
                 if (image.length > 0) {
                     image[0].src = image.data('src');
                     image.attr('data-src', null);
                 }
             }
-
-            this.positions.push(leftPos);
-
-            $(item).css('left', leftPos);
         });
     },
 

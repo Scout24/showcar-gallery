@@ -56,12 +56,18 @@
 	    positions: [],
 	    touchStart: {},
 	    touchPrev: {},
+	    numberOfItemsToPreload: 2,
 	
 	    createdCallback: function createdCallback() {
 	        var _this = this;
 	
 	        var handler,
 	            timeout = 500;
+	
+	        var preload = $(this).data('preload-items');
+	        if (preload) {
+	            this.numberOfItemsToPreload = $(this).data('preload-items');
+	        }
 	
 	        $(window).on('resize', function () {
 	            if (handler) {
@@ -75,6 +81,11 @@
 	        this.el = $(this);
 	        this.items = this.el.children(this.itemName);
 	
+	        // do this synchronously to omit side effects
+	        for (var i = 1; i <= this.items.length; i++) {
+	            $(this.items[i]).attr('data-number', i);
+	        }
+	
 	        if (this.items.length < 2) {
 	            this.handleEdgecases();
 	        }
@@ -87,6 +98,7 @@
 	            _this.items.each(function (index) {
 	                $(this).css('left', positions[index]);
 	            });
+	            _this.load();
 	        });
 	        $('.right', this.el).click(function () {
 	            var positions = _this.positions;
@@ -95,9 +107,9 @@
 	            _this.items.each(function (index) {
 	                $(this).css('left', positions[index]);
 	            });
+	            _this.load();
 	        });
 	        this.el.on('touchstart', function (e) {
-	            _this.lazyLoadImages();
 	            $('as24-gallery-item', _this.el).addClass('no-transition');
 	            _this.resetTouch();
 	            if (!$(e.target).hasClass('right') && !$(e.target).hasClass('left')) {
@@ -138,11 +150,14 @@
 	            var absTouchDiffX = Math.abs(touchDiffX);
 	            var howMany = Math.ceil(absTouchDiffX / _this.itemWidth);
 	
+	            var direction;
 	            for (var i = 0; i < howMany; i++) {
 	                if (touchDiffX > 0) {
 	                    _this.moveRight();
+	                    _this.load();
 	                } else if (touchDiffX < 0) {
 	                    _this.moveLeft();
+	                    _this.load();
 	                }
 	            }
 	            var positions = _this.positions;
@@ -150,7 +165,6 @@
 	                $(this).css('left', positions[index]);
 	            });
 	        });
-	        this.el.on('click', this.lazyLoadImages);
 	        this.pager();
 	    },
 	    init: function init(reorder) {
@@ -215,12 +229,6 @@
 	
 	        return itemWidth;
 	    },
-	    lazyLoadImages: function lazyLoadImages() {
-	        $('[data-src]', this.el).each(function (index, item) {
-	            item.src = $(item).data('src');
-	            $(item).attr('data-src', null);
-	        });
-	    },
 	    handleEdgecases: function handleEdgecases() {
 	        $('.left, .right, .pager', this.el).hide();
 	        if (this.items.length === 0) {
@@ -249,17 +257,30 @@
 	            var indexDiff = index + 1 - middleItem;
 	            var leftPos = centerPos + indexDiff * _this2.itemWidth;
 	
-	            if (leftPos + _this2.itemWidth > 0 && leftPos < _this2.el.width()) {
+	            _this2.positions.push(leftPos);
+	
+	            $(item).css('left', leftPos);
+	        });
+	
+	        this.load();
+	    },
+	    load: function load() {
+	        var _this3 = this;
+	
+	        var itemCount = this.items.length;
+	        var middleItem = Math.ceil(itemCount / 2);
+	        var centerPos = (this.el[0].clientWidth - this.itemWidth) / 2;
+	        this.items.each(function (index, item) {
+	            var indexDiff = index + 1 - middleItem;
+	            var leftPos = centerPos + indexDiff * _this3.itemWidth;
+	
+	            if (leftPos + _this3.itemWidth + _this3.numberOfItemsToPreload * _this3.itemWidth > 0 && leftPos - _this3.numberOfItemsToPreload * _this3.itemWidth < _this3.el.width()) {
 	                var image = $('[data-src]', item);
 	                if (image.length > 0) {
 	                    image[0].src = image.data('src');
 	                    image.attr('data-src', null);
 	                }
 	            }
-	
-	            _this2.positions.push(leftPos);
-	
-	            $(item).css('left', leftPos);
 	        });
 	    },
 	    moveLeft: function moveLeft() {
