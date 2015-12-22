@@ -32,8 +32,8 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         this.items = this.el.children(this.itemName);
 
         // do this synchronously to omit side effects
-        for (var i = 1; i <= this.items.length; i++) {
-            $(this.items[i]).attr('data-number', i);
+        for (var i = 0; i <= this.items.length; i++) {
+            $(this.items[i]).attr('data-number', i + 1);
         }
 
         if (this.items.length < 2) {
@@ -115,7 +115,6 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
                 $(this).css('left', positions[index]);
             });
         });
-        this.pager();
     },
 
     init(reorder) {
@@ -161,12 +160,11 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
     },
 
     pager() {
-        var items = this.items;
-        var duplicates = items.filter('.duplicate');
-        var totalPages = items.length - duplicates.length;
+        var duplicates = this.items.filter('.duplicate');
+        var totalPages = this.items.length - duplicates.length;
 
-        const middleItem = Math.ceil(items.length / 2);
-        var currentNumber = $(items[middleItem - 1]).data('number');
+        const middleItem = Math.ceil(this.items.length / 2);
+        var currentNumber = $(this.items[middleItem - 1]).data('number');
         var currentPage = currentNumber % totalPages || totalPages;
         $('.pager', this.el).html(currentPage + '/' + totalPages);
     },
@@ -215,7 +213,7 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
             $(item).css('left', leftPos);
         });
 
-
+        this.pager();
         this.load();
     },
 
