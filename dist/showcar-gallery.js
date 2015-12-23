@@ -50,13 +50,19 @@
 	
 	    el: null,
 	    itemWidth: 0,
-	    itemName: 'as24-gallery-item',
 	    items: null,
 	    duplicateClass: 'duplicate',
 	    positions: [],
 	    touchStart: {},
 	    touchPrev: {},
 	    numberOfItemsToPreload: 2,
+	
+	    selectors: {
+	        itemName: 'as24-gallery-item',
+	        leftPager: '.left',
+	        rightPager: '.right',
+	        pager: '.pager'
+	    },
 	
 	    createdCallback: function createdCallback() {
 	        var _this = this;
@@ -79,7 +85,7 @@
 	        });
 	
 	        this.el = $(this);
-	        this.items = this.el.children(this.itemName);
+	        this.items = this.el.children(this.selectors.itemName);
 	
 	        // do this synchronously to omit side effects
 	        for (var i = 0; i <= this.items.length; i++) {
@@ -92,7 +98,7 @@
 	
 	        this.init(true);
 	
-	        $('.left', this.el).click(function () {
+	        $(this.selectors.leftPager, this.el).click(function () {
 	            var positions = _this.positions;
 	            _this.moveLeft();
 	            _this.items.each(function (index) {
@@ -100,7 +106,7 @@
 	            });
 	            _this.load();
 	        });
-	        $('.right', this.el).click(function () {
+	        $(this.selectors.rightPager, this.el).click(function () {
 	            var positions = _this.positions;
 	            _this.moveRight();
 	
@@ -174,7 +180,7 @@
 	    },
 	
 	    resizeOverlays: function resizeOverlays() {
-	        var overlays = $('.right, .left', this.el);
+	        var overlays = $(this.selectors.rightPager + ', ' + this.selectors.leftPager, this.el);
 	        var overlayMinWidth = parseInt(overlays.css('min-width'));
 	        overlayMinWidth += parseInt(this.items.first().css('margin-left'));
 	        overlays.toggleClass('pagination-small', this.itemWidth + 2 * overlayMinWidth >= this.el.width());
@@ -214,7 +220,7 @@
 	        var middleItem = Math.ceil(this.items.length / 2);
 	        var currentNumber = $(this.items[middleItem - 1]).data('number');
 	        var currentPage = currentNumber % totalPages || totalPages;
-	        $('.pager', this.el).html(currentPage + '/' + totalPages);
+	        $(this.selectors.pager, this.el).html(currentPage + '/' + totalPages);
 	    },
 	    calculateItemWidth: function calculateItemWidth() {
 	        var firstChild = this.items.first();
@@ -228,7 +234,7 @@
 	        return itemWidth;
 	    },
 	    handleEdgecases: function handleEdgecases() {
-	        $('.left, .right, .pager', this.el).hide();
+	        $(this.selectors.leftPager + ', ' + this.selectors.rightPager + ', ' + this.selectors.pager, this.el).hide();
 	        if (this.items.length === 0) {
 	            $('.placeholder', this.el).show();
 	        }
@@ -246,7 +252,7 @@
 	                    _this2.el.append(item);
 	                }
 	            });
-	            this.items = this.el.children(this.itemName);
+	            this.items = this.el.children(this.selectors.itemName);
 	        }
 	
 	        this.positions = [];
@@ -260,7 +266,7 @@
 	            $(item).css('left', leftPos);
 	        });
 	        //position pager to left bottom corner
-	        $('.pager', this.el).css('left', centerPos + parseInt(this.items.first().css('margin-left')));
+	        $(this.selectors.pager, this.el).css('left', centerPos + parseInt(this.items.first().css('margin-left')));
 	
 	        this.pager();
 	        this.load();
@@ -286,12 +292,12 @@
 	    },
 	    moveLeft: function moveLeft() {
 	        this.items.last().insertBefore(this.items.first());
-	        this.items = this.el.children(this.itemName);
+	        this.items = this.el.children(this.selectors.itemName);
 	        this.pager();
 	    },
 	    moveRight: function moveRight() {
 	        this.items.first().insertAfter(this.items.last());
-	        this.items = this.el.children(this.itemName);
+	        this.items = this.el.children(this.selectors.itemName);
 	        this.pager();
 	    },
 	    moveItems: function moveItems(direction) {
