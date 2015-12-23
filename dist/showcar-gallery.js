@@ -259,6 +259,8 @@
 	
 	            $(item).css('left', leftPos);
 	        });
+	        //position pager to left bottom corner
+	        $('.pager', this.el).css('left', centerPos + parseInt(this.items.first().css('margin-left')));
 	
 	        this.pager();
 	        this.load();

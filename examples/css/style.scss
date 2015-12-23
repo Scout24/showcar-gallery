@@ -3,12 +3,13 @@ body {
 }
 
 as24-gallery {
-  height: 240px;
+  height: 480px;
   width: 100%;
   border: 2px solid blue;
 
   as24-gallery-item {
-    width: 320px;
+    width: 50%;
+    min-width: 320px;
   }
 }
 
