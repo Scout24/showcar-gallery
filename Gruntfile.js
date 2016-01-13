@@ -1,6 +1,4 @@
-module.exports = function(grunt) {
-    var moduleName = "ui";
-    var loadConfig = function (name, module) {
+module.exports = function(grunt) { var moduleName = "ui"; var loadConfig = function (name, module) {
         var result = {};
         module = module || moduleName || "module";
         name = name.indexOf(".") > -1 ? name : name + ".conf";

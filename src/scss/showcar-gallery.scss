@@ -1,3 +1,4 @@
+/* vim: set tabstop=2:softtabstop=2:shiftwidth=2:noexpandtab */
 as24-gallery {
   display: block;
   position: relative;
@@ -6,7 +7,7 @@ as24-gallery {
   .left, .right {
     position: absolute;
     top: 0;
-    bottom: 0;
+    height: 100%;
     z-index: 2;
     min-width: 40px;
 
@@ -16,16 +17,8 @@ as24-gallery {
     cursor: pointer;
 
     background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0" y="0" width="28" height="48" viewBox="0 0 28 48" xml:space="preserve" enable-background="new 0 0 28 48"><style type="text/css">.st0{fill-rule:evenodd;clip-rule:evenodd;fill: #fff;}</style><polygon class="st0" points="27.4 24.1 3.1 48 0 45.1 21.4 24.1 0 3.1 3.1 0 "/></svg>') no-repeat center center;
+    // '
     background-color: rgba(0, 0, 0, 0.5);
-
-    &.pagination-small {
-      height: 60px;
-      top: 0;
-      bottom: 0;
-      margin-top: auto;
-      margin-bottom: auto;
-      background-size: 16px 28px;
-    }
 
     &:before {
       //used for vertical positioning of pager
@@ -34,26 +27,34 @@ as24-gallery {
       height: 100%;
       vertical-align: middle;
     }
+    &:hover {
+        background-color: rgba(0, 0, 0, 0.8);
+    }
   }
+
   .left {
-    left: 0;
-    transform: rotate(180deg);
+      left: 0;
+      transform: rotate(180deg);
   }
+
   .right {
-    right: 0;
+      right: 0;
+  }
+
+  @media all and (max-width: 769px) {
+      .left, .right {
+          top: 50%;
+          height: 60px;
+          margin-top: -30px;
+          margin-bottom: auto;
+          background-size: 16px 28px;
+      }
   }
 
   .pager {
     position: absolute;
     z-index: 1;
     bottom: 0;
-    /*
-
-    left: 0;
-    right: 0;
-    margin: 0 auto;
-    */
-
     width: 60px;
     background: rgba(0, 0, 0, 0.5);
     text-align: center;
@@ -92,6 +93,6 @@ as24-gallery {
       margin: auto;
     }
   }
-}
 
+}
 
