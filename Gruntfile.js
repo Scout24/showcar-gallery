@@ -1,4 +1,4 @@
-module.exports = function(grunt) {
+module.exports = function (grunt) {
     var moduleName = "ui";
     var loadConfig = function (name, module) {
         var result = {};
