@@ -79,7 +79,9 @@
 	            if (handler) {
 	                clearTimeout(handler);
 	            }
-	            handler = setTimeout(_this.init, timeout);
+	            handler = setTimeout(function () {
+	                _this.init();
+	            }, timeout);
 	        });
 	
 	        this.el = $(this);

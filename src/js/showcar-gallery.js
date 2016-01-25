@@ -29,7 +29,9 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
             if(handler) {
                 clearTimeout(handler);
             }
-            handler = setTimeout(this.init, timeout);
+            handler = setTimeout(() => {
+                this.init();
+            }, timeout);
         });
 
         this.el = $(this);
