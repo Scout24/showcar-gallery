@@ -6,8 +6,7 @@ module.exports = (function() {
         options: {
             outputStyle: DEBUG ? 'expanded' : 'compressed',
             sourceMap: DEBUG,
-            sourceMapEmbed: true,
-            autoprefixer: {'browsers': ['last 3 versions', '> 1%']},
+            sourceMapEmbed: true
         },
         files: [
             {dest: 'examples/css/style.css', src: 'examples/css/style.scss'},
