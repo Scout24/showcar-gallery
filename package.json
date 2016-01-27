@@ -1,5 +1,5 @@
 {
-  "name": "showcar-ui",
+  "name": "showcar-gallery",
   "version": "1.0.0",
   "description": "",
   "directories": {
@@ -8,11 +8,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AutoScout24/showcar-ui.git"
+    "url": "git+https://github.com/AutoScout24/showcar-gallery.git"
   },
   "author": "",
   "license": "ISC",
-  "homepage": "https://github.com/AutoScout24/showcar-ui#readme",
+  "homepage": "https://github.com/AutoScout24/showcar-gallery#readme",
   "devDependencies": {
     "babel-core": "^6.1.2",
     "babel-loader": "^6.0.1",
@@ -21,9 +21,11 @@
     "grunt-cli": "^0.1.13",
     "grunt-contrib-uglify": "^0.10.0",
     "grunt-contrib-watch": "^0.6.1",
+    "grunt-pleeease": "^1.4.0",
     "grunt-sass": "^1.1.0",
     "grunt-webpack": "^1.0.11",
     "load-grunt-tasks": "^3.3.0",
+    "showcar-ui": "git+ssh://git@github.com/AutoScout24/showcar-gallery.git",
     "webpack": "^1.12.3",
     "webpack-dev-server": "^1.12.1"
   }

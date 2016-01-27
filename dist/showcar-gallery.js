@@ -79,9 +79,7 @@
 	            if (handler) {
 	                clearTimeout(handler);
 	            }
-	            handler = setTimeout(function () {
-	                _this.init();
-	            }, timeout);
+	            handler = setTimeout(_this.init, timeout);
 	        });
 	
 	        this.el = $(this);
@@ -176,23 +174,7 @@
 	        this.itemWidth = this.calculateItemWidth();
 	        this.fillItems();
 	        this.positionElements(reorder);
-	        this.resizeOverlays();
 	    },
-	
-	    resizeOverlays: function resizeOverlays() {
-	        var overlays = $(this.selectors.rightPager + ', ' + this.selectors.leftPager, this.el);
-	        var overlayMinWidth = parseInt(overlays.css('min-width'));
-	        overlayMinWidth += parseInt(this.items.first().css('margin-left'));
-	        overlays.toggleClass('pagination-small', this.itemWidth + 2 * overlayMinWidth >= this.el.width());
-	        var overlayWidth = 0;
-	        if (this.items.length > 1) {
-	            overlayWidth = this.el[0].clientWidth / 2 - this.itemWidth / 2;
-	            var firstChild = this.items.first();
-	            overlayWidth -= parseInt(firstChild.css('margin-left'));
-	        }
-	        overlays.css('width', overlayWidth);
-	    },
-	
 	    fillItems: function fillItems() {
 	        var noOfItems = this.items.length;
 	        if (noOfItems < 2) {
