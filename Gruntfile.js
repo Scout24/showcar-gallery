@@ -1,4 +1,4 @@
-module.exports = function(grunt) {
+module.exports = function (grunt) {
     var moduleName = "ui";
     var loadConfig = function (name, module) {
         var result = {};
@@ -13,10 +13,11 @@ module.exports = function(grunt) {
         webpack: loadConfig("webpack"),
         uglify: loadConfig("uglify"),
         sass: loadConfig("sass"),
-        watch: loadConfig("watch")
+        watch: loadConfig("watch"),
+        pleeease: loadConfig("pleeease")
     });
 
-    grunt.registerTask("build", ["sass", "webpack"]);
+    grunt.registerTask("build", ["sass", "webpack", "pleeease"]);
     grunt.registerTask("dist", ["build", "uglify"]);
 
     grunt.registerTask("default", ["dist"]);
