@@ -25,7 +25,6 @@
     "grunt-sass": "^1.1.0",
     "grunt-webpack": "^1.0.11",
     "load-grunt-tasks": "^3.3.0",
-    "showcar-ui": "git+ssh://git@github.com/AutoScout24/showcar-gallery.git",
     "webpack": "^1.12.3",
     "webpack-dev-server": "^1.12.1"
   }
