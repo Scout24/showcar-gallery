@@ -13,7 +13,10 @@ as24-gallery {
     text-align: center;
     vertical-align: middle;
     cursor: pointer;
-    background: rgba(0, 0, 0, 0.5) url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" version="1.1" x="0" y="0" width="28" height="48" viewBox="0 0 28 48" xml:space="preserve" enable-background="new 0 0 28 48"><style type="text/css">.st0{fill-rule:evenodd;clip-rule:evenodd;fill: #fff;}</style><polygon class="st0" points="27.4 24.1 3.1 48 0 45.1 21.4 24.1 0 3.1 3.1 0 "/></svg>') no-repeat center center;
+    background-color: rgba(0, 0, 0, .5);
+    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyOCIgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDI4IDQ4Ij48c3R5bGU+LnN0MHtmaWxsLXJ1bGU6ZXZlbm9kZDtjbGlwLXJ1bGU6ZXZlbm9kZDtmaWxsOiNmZmZ9PC9zdHlsZT48cGF0aCBjbGFzcz0ic3QwIiBkPSJNMjcuNCAyNC4xTDMuMSA0OCAwIDQ1LjFsMjEuNC0yMUwwIDMuMSAzLjEgMHoiLz48L3N2Zz4=);
+    background-repeat: no-repeat;
+    background-position: center center;
 
     &:before {
       //used for vertical positioning of pager
@@ -22,6 +25,7 @@ as24-gallery {
       height: 100%;
       vertical-align: middle;
     }
+
     &:hover {
         background-color: rgba(0, 0, 0, 0.8);
     }
