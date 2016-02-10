@@ -7,6 +7,14 @@ as24-gallery {
   width: 100%;
   border: 2px solid blue;
 
+  @media (max-width: 800px) {
+    height: 360px;
+  }
+
+  @media (max-width: 400px) {
+    height: 240px;
+  }
+
   as24-gallery-item {
     width: 50%;
     min-width: 320px;
