@@ -127,14 +127,32 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
         this.itemWidth = this.calculateItemWidth();
         this.fillItems();
         this.positionElements(reorder);
+        this.resizeOverlays();
+    },
+
+    resizeOverlays: function () {
+        var overlays = $(this.selectors.rightPager + ', ' + this.selectors.leftPager, this.el);
+        var overlayMinWidth = parseInt(overlays.css('min-width'));
+        overlayMinWidth += parseInt(this.items.first().css('margin-left'));
+        overlays.toggleClass('pagination-small', (this.itemWidth + 2 * overlayMinWidth) >= this.el.width());
+        var overlayWidth = 0;
+        if (this.items.length > 1) {
+            overlayWidth = this.el[0].clientWidth / 2 - this.itemWidth / 2;
+            const firstChild = this.items.first();
+            overlayWidth -= parseInt(firstChild.css('margin-left'));
+        }
+        overlays.css('width', overlayWidth);
     },
 
     fillItems () {
         var noOfItems = this.items.length;
         if (noOfItems < 2) {
             return;
+        } else if (noOfItems == 2) {
+            var space = 1;
+        } else {
+            var space = this.el[0].clientWidth - noOfItems * this.itemWidth;
         }
-        var space = this.el[0].clientWidth - noOfItems * this.itemWidth;
 
         if (space > 0) {
             var numberOfItemsToCreate = Math.ceil(Math.ceil(space / this.itemWidth) / noOfItems) * noOfItems;
@@ -147,6 +165,7 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
                 var target = $('[data-number="' + (index - 1) + '"]');
                 target.after(el);
             }
+            this.items = this.el.children(this.selectors.itemName);
         }
     },
 
@@ -265,6 +284,9 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
             x: e.clientX || (touch && touch.clientX),
             y: e.clientY || (touch && touch.clientY)
         };
+    },
+    redraw() {
+        this.init(false);
     }
 });
 

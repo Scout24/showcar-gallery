@@ -46,7 +46,9 @@
 
 	'use strict';
 	
-	var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
+	var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
+	
+	var as24gallery = _extends(Object.create(HTMLElement.prototype), {
 	
 	    el: null,
 	    itemWidth: 0,
@@ -176,13 +178,33 @@
 	        this.itemWidth = this.calculateItemWidth();
 	        this.fillItems();
 	        this.positionElements(reorder);
+	        this.resizeOverlays();
 	    },
+	
+	
+	    resizeOverlays: function resizeOverlays() {
+	        var overlays = $(this.selectors.rightPager + ', ' + this.selectors.leftPager, this.el);
+	        var overlayMinWidth = parseInt(overlays.css('min-width'));
+	        overlayMinWidth += parseInt(this.items.first().css('margin-left'));
+	        overlays.toggleClass('pagination-small', this.itemWidth + 2 * overlayMinWidth >= this.el.width());
+	        var overlayWidth = 0;
+	        if (this.items.length > 1) {
+	            overlayWidth = this.el[0].clientWidth / 2 - this.itemWidth / 2;
+	            var firstChild = this.items.first();
+	            overlayWidth -= parseInt(firstChild.css('margin-left'));
+	        }
+	        overlays.css('width', overlayWidth);
+	    },
+	
 	    fillItems: function fillItems() {
 	        var noOfItems = this.items.length;
 	        if (noOfItems < 2) {
 	            return;
+	        } else if (noOfItems == 2) {
+	            var space = 1;
+	        } else {
+	            var space = this.el[0].clientWidth - noOfItems * this.itemWidth;
 	        }
-	        var space = this.el[0].clientWidth - noOfItems * this.itemWidth;
 	
 	        if (space > 0) {
 	            var numberOfItemsToCreate = Math.ceil(Math.ceil(space / this.itemWidth) / noOfItems) * noOfItems;
@@ -195,6 +217,7 @@
 	                var target = $('[data-number="' + (index - 1) + '"]');
 	                target.after(el);
 	            }
+	            this.items = this.el.children(this.selectors.itemName);
 	        }
 	    },
 	    pager: function pager() {
@@ -308,6 +331,9 @@
 	            x: e.clientX || touch && touch.clientX,
 	            y: e.clientY || touch && touch.clientY
 	        };
+	    },
+	    redraw: function redraw() {
+	        this.init(false);
 	    }
 	});
 	

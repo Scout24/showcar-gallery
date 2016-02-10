@@ -64,6 +64,14 @@ To use the gallery on your page, some minimal css code is needed:
     }
 ```
 
+### JS Interface
+
+If you need to change the size of the gallery dynamically (e.g. width and/or height), you can call the ``redraw()`` method, to force the gallery to recalculate its sizings and positionings.
+
+```
+document.getElementById('gallery-example').redraw()
+```
+
 ## Installation
 
 ### How to install:

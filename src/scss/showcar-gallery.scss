@@ -6,7 +6,7 @@ as24-gallery {
   .left, .right {
     position: absolute;
     top: 0;
-    height: 100%;
+    bottom: 0;
     z-index: 2;
     min-width: 40px;
     color: #fff;
@@ -17,6 +17,15 @@ as24-gallery {
     background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyOCIgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDI4IDQ4Ij48c3R5bGU+LnN0MHtmaWxsLXJ1bGU6ZXZlbm9kZDtjbGlwLXJ1bGU6ZXZlbm9kZDtmaWxsOiNmZmZ9PC9zdHlsZT48cGF0aCBjbGFzcz0ic3QwIiBkPSJNMjcuNCAyNC4xTDMuMSA0OCAwIDQ1LjFsMjEuNC0yMUwwIDMuMSAzLjEgMHoiLz48L3N2Zz4=);
     background-repeat: no-repeat;
     background-position: center center;
+
+    &.pagination-small {
+      height: 60px;
+      top: 0;
+      bottom: 0;
+      margin-top: auto;
+      margin-bottom: auto;
+      background-size: 16px 28px;
+    }
 
     &:before {
       //used for vertical positioning of pager
@@ -40,7 +49,7 @@ as24-gallery {
     right: 0;
   }
 
-  @media all and (max-width: 769px) {
+  @media all and (max-width: 1023px) {
     .left, .right {
       top: 50%;
       height: 60px;
@@ -70,7 +79,7 @@ as24-gallery {
     position: absolute;
     top: 0;
     bottom: 0;
-    margin: 0 10px;
+    margin: 0 2px;
     //don't increase transition 0.2s, will cause position calculation problems
     transition: left 0.2s;
     transition-timing-function: ease-in-out;
