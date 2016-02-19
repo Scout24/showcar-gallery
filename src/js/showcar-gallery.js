@@ -290,18 +290,12 @@ var as24gallery = Object.assign(Object.create(HTMLElement.prototype), {
     }
 });
 
-var isRegistered = function(name) {
-    var registered = document.createElement(name).__proto__ !== HTMLElement.prototype;
-
-    if (registered && window && window.console) {
-        window.console.warn('CustomElement "' + name + '" is already registered.');
-    }
-
-    return registered;
-};
-
-if (!isRegistered('as24-gallery')) {
+try {
     document.registerElement('as24-gallery', {
         prototype: as24gallery
     });
+} catch (e) {
+    if (window && window.console) {
+        window.console.warn('Failed to register CustomElement "as24-gallery".', e);
+    }
 }
