@@ -80,7 +80,7 @@ document.getElementById('gallery-example').redraw()
 
   `bower install --save git@github.com:AutoScout24/showcar-gallery.git`
 
-  Afterwards you need to add the css and js to your page
+  Afterwards you need to add the css and js to your page.
 
   ```html
   <link rel="stylesheet" href="../dist/showcar-gallery.css">
@@ -89,6 +89,8 @@ document.getElementById('gallery-example').redraw()
   ```html
   <script src="../dist/showcar-gallery.js"></script>
   ```
+
+  showcar-gallery requires zepto.js, please include it according to the zepto.js documentation.
 
 ## Contributing
 
