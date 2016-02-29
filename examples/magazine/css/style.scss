@@ -33,6 +33,7 @@ as24-gallery {
     position: relative;
     as24-gallery-item {
       overflow: hidden;
+      margin-left: 0;
       margin-right: $gutterWidth;
       width: $itemWidth;
       background-color: white;
