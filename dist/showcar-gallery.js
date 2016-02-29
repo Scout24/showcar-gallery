@@ -58,8 +58,6 @@
 	    touchStart: {},
 	    touchPrev: {},
 	    numberOfItemsToPreload: 2,
-	    centerFirstItem: true,
-	    focusSingleItem: true,
 	
 	    selectors: {
 	        itemName: 'as24-gallery-item',
@@ -71,7 +69,7 @@
 	    createdCallback: function createdCallback() {
 	        var _this = this;
 	
-	        var handler = undefined,
+	        var handler,
 	            timeout = 500;
 	
 	        var preload = $(this).data('preload-items');
@@ -80,16 +78,16 @@
 	        }
 	
 	        $(window).on('resize', function () {
-	            handler && clearTimeout(handler);
+	            if (handler) {
+	                clearTimeout(handler);
+	            }
 	            handler = setTimeout(function () {
 	                _this.init();
 	            }, timeout);
 	        });
 	
 	        this.el = $(this);
-	        this.items = $(this.selectors.itemName, this.el);
-	        this.centerFirstItem = false !== $(this).data('center-first-item');
-	        this.focusSingleItem = false !== $(this).data('focus-single-item');
+	        this.items = this.el.children(this.selectors.itemName);
 	
 	        // do this synchronously to omit side effects
 	        for (var i = 0; i <= this.items.length; i++) {
@@ -120,7 +118,7 @@
 	            _this.load();
 	        });
 	        this.el.on('touchstart', function (e) {
-	            $(_this.selectors.itemName, _this.el).addClass('no-transition');
+	            $('as24-gallery-item', _this.el).addClass('no-transition');
 	            _this.resetTouch();
 	            if (!$(e.target).hasClass('right') && !$(e.target).hasClass('left')) {
 	                _this.touchStart = _this.getTouchCoords(e);
@@ -136,14 +134,12 @@
 	            var startDiffX = Math.abs(touchCoords.x - _this.touchStart.x);
 	            var startDiffY = Math.abs(touchCoords.y - _this.touchStart.y);
 	            if (startDiffX < startDiffY) {
-	                (function () {
-	                    $(_this.selectors.itemName, _this.el).removeClass('no-transition');
-	                    var positions = _this.positions;
-	                    _this.items.each(function (index) {
-	                        $(this).css('left', positions[index]);
-	                    });
-	                    _this.resetTouch();
-	                })();
+	                $('as24-gallery-item', _this.el).removeClass('no-transition');
+	                var positions = _this.positions;
+	                _this.items.each(function (index) {
+	                    $(this).css('left', positions[index]);
+	                });
+	                _this.resetTouch();
 	            } else {
 	                e.preventDefault();
 	                var touchDiffX = touchCoords.x - _this.touchPrev.x;
@@ -153,7 +149,7 @@
 	        });
 	
 	        this.el.on('touchend', function (e) {
-	            $(_this.selectors.itemName, _this.el).removeClass('no-transition');
+	            $('as24-gallery-item', _this.el).removeClass('no-transition');
 	            if (!_this.isSwiping()) {
 	                return;
 	            }
@@ -162,7 +158,7 @@
 	            var absTouchDiffX = Math.abs(touchDiffX);
 	            var howMany = Math.ceil(absTouchDiffX / _this.itemWidth);
 	
-	            var direction = undefined;
+	            var direction;
 	            for (var i = 0; i < howMany; i++) {
 	                if (touchDiffX > 0) {
 	                    _this.moveRight();
@@ -182,9 +178,7 @@
 	        this.itemWidth = this.calculateItemWidth();
 	        this.fillItems();
 	        this.positionElements(reorder);
-	        if (this.focusSingleItem) {
-	            this.resizeOverlays();
-	        }
+	        this.resizeOverlays();
 	    },
 	
 	
@@ -204,30 +198,27 @@
 	
 	    fillItems: function fillItems() {
 	        var noOfItems = this.items.length;
-	        var space = 1;
-	
 	        if (noOfItems < 2) {
 	            return;
+	        } else if (noOfItems == 2) {
+	            var space = 1;
+	        } else {
+	            var space = this.el[0].clientWidth - noOfItems * this.itemWidth;
 	        }
 	
-	        if (noOfItems > 2) {
-	            space = this.el[0].clientWidth - noOfItems * this.itemWidth;
+	        if (space > 0) {
+	            var numberOfItemsToCreate = Math.ceil(Math.ceil(space / this.itemWidth) / noOfItems) * noOfItems;
+	            var index = noOfItems;
+	            for (var i = 1; i <= numberOfItemsToCreate; i++) {
+	                var dataNo = i % noOfItems;
+	                dataNo = dataNo || noOfItems;
+	                index += 1;
+	                var el = $('[data-number="' + dataNo + '"').clone().data('number', index).addClass(this.duplicateClass);
+	                var target = $('[data-number="' + (index - 1) + '"]');
+	                target.after(el);
+	            }
+	            this.items = this.el.children(this.selectors.itemName);
 	        }
-	
-	        if (space <= 0) {
-	            return;
-	        }
-	        var numberOfItemsToCreate = Math.ceil(Math.ceil(space / this.itemWidth) / noOfItems) * noOfItems;
-	        var index = noOfItems;
-	        for (var i = 1; i <= numberOfItemsToCreate; i++) {
-	            var dataNo = i % noOfItems;
-	            dataNo = dataNo || noOfItems;
-	            index += 1;
-	            var el = $('[data-number="' + dataNo + '"').clone().data('number', index).addClass(this.duplicateClass);
-	            var target = $('[data-number="' + (index - 1) + '"]');
-	            target.after(el);
-	        }
-	        this.items = $(this.selectors.itemName, this.el);
 	    },
 	    pager: function pager() {
 	        var duplicates = this.items.filter('.duplicate');
@@ -243,8 +234,8 @@
 	        var itemWidth = 0;
 	        if (firstChild.length > 0) {
 	            itemWidth = firstChild.width();
-	            itemWidth += parseInt(firstChild.css('margin-left'), 10);
-	            itemWidth += parseInt(firstChild.css('margin-right'), 10);
+	            itemWidth += parseInt(firstChild.css('margin-left'));
+	            itemWidth += parseInt(firstChild.css('margin-right'));
 	        }
 	
 	        return itemWidth;
@@ -263,26 +254,26 @@
 	        var centerPos = (this.el[0].clientWidth - this.itemWidth) / 2;
 	
 	        if (reorder) {
-	            if (this.centerFirstItem) {
-	                this.items.each(function (index, item) {
-	                    if (index <= itemCount / 2) {
-	                        _this2.el.append(item);
-	                    }
-	                });
-	            }
-	            this.items = $(this.selectors.itemName, this.el);
+	            this.items.each(function (index, item) {
+	                if (index <= itemCount / 2) {
+	                    _this2.el.append(item);
+	                }
+	            });
+	            this.items = this.el.children(this.selectors.itemName);
 	        }
 	
 	        this.positions = [];
 	
 	        this.items.each(function (index, item) {
 	            var indexDiff = index + 1 - middleItem;
-	            var leftPos = _this2.centerFirstItem ? centerPos + indexDiff * _this2.itemWidth : index * _this2.itemWidth;
+	            var leftPos = centerPos + indexDiff * _this2.itemWidth;
+	
 	            _this2.positions.push(leftPos);
+	
 	            $(item).css('left', leftPos);
 	        });
 	        //position pager to left bottom corner
-	        $(this.selectors.pager, this.el).css('left', centerPos + parseInt(this.items.first().css('margin-left'), 10));
+	        $(this.selectors.pager, this.el).css('left', centerPos + parseInt(this.items.first().css('margin-left')));
 	
 	        this.pager();
 	        this.load();
@@ -308,16 +299,16 @@
 	    },
 	    moveLeft: function moveLeft() {
 	        this.items.last().insertBefore(this.items.first());
-	        this.items = $(this.selectors.itemName, this.el);
+	        this.items = this.el.children(this.selectors.itemName);
 	        this.pager();
 	    },
 	    moveRight: function moveRight() {
 	        this.items.first().insertAfter(this.items.last());
-	        this.items = $(this.selectors.itemName, this.el);
+	        this.items = this.el.children(this.selectors.itemName);
 	        this.pager();
 	    },
 	    moveItems: function moveItems(direction) {
-	        var left = undefined;
+	        var left;
 	        var itemWidth = this.itemWidth;
 	        this.items.each(function (index) {
 	            if (!left) {
