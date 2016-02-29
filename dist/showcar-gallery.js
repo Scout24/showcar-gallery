@@ -213,7 +213,7 @@
 	                var dataNo = i % noOfItems;
 	                dataNo = dataNo || noOfItems;
 	                index += 1;
-	                var el = $('[data-number="' + dataNo + '"').clone().data('number', index).addClass(this.duplicateClass);
+	                var el = $('[data-number="' + dataNo + '"]').clone().data('number', index).addClass(this.duplicateClass);
 	                var target = $('[data-number="' + (index - 1) + '"]');
 	                target.after(el);
 	            }
