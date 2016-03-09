@@ -1,4 +1,4 @@
-module.exports = (function() {
+module.exports = (function () {
     var grunt = require("grunt");
     var DEBUG = !!grunt.option('dbg');
 
@@ -10,8 +10,14 @@ module.exports = (function() {
         },
         files: [
             {dest: 'examples/css/style.css', src: 'examples/css/style.scss'},
-            {dest: 'examples/magazine/css/style.css', src: 'examples/magazine/css/style.scss'},
-            {dest: 'dist/showcar-gallery.css', src: 'src/scss/showcar-gallery.scss'}
+            {dest: 'dist/showcar-gallery.css', src: 'src/scss/showcar-gallery.scss'},
+            {
+                expand: true,
+                cwd: 'examples',
+                src: ['*.scss'],
+                dest: 'examples',
+                ext: '.css'
+            }
         ]
     }
 })();
