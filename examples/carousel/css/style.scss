@@ -1,0 +1,43 @@
+$itemHeight: 330px;
+$itemWidth: 320px;
+$gutterWidth: 25px;
+
+as24-gallery {
+  overflow: visible;
+  .left, .right {
+    top: 50%;
+    height: 80px;
+    margin-top: -40px;
+    transition: left .5s ease-in-out, right .5s ease-in-out;
+  }
+  @media (min-width:1100px) {
+    .left {
+      left: -1%;
+    }
+    .right {
+      right: -1%;
+    }
+  }
+  & > div {
+    overflow: hidden;
+    height: $itemHeight;
+    position: relative;
+    as24-gallery-item {
+      overflow: hidden;
+      margin-left: 0;
+      margin-right: $gutterWidth;
+      width: $itemWidth;
+      background-color: white;
+      color: #444;
+      border: 1px solid silver;
+      text-align: center;
+      .description {
+        padding: 20px 20px 28px;
+      }
+      img {
+        display: block;
+        position: initial;
+      }
+    }
+  }
+}

@@ -11,6 +11,7 @@ module.exports = (function () {
         files: [
             {dest: 'examples/css/style.css', src: 'examples/css/style.scss'},
             {dest: 'dist/showcar-gallery.css', src: 'src/scss/showcar-gallery.scss'},
+            {dest: 'dist/showcar-carousel.css', src: 'src/scss/showcar-carousel.scss'},
             {
                 expand: true,
                 cwd: 'examples',
