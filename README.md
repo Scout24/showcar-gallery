@@ -72,6 +72,14 @@ If you need to change the size of the gallery dynamically (e.g. width and/or hei
 document.getElementById('gallery-example').redraw()
 ```
 
+### JS Events
+
+You can listen on a `as24-gallery:change` event. This event is triggered if a page was changed and a new image loaded:
+
+```
+$('as24-gallery').on('as24-gallery:change', (e) => console.log("Page changed", e) );
+```
+
 ## Installation
 
 ### How to install:
