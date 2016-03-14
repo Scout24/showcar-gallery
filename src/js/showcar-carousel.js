@@ -85,8 +85,12 @@ let as24carousel = Object.assign(Object.create(HTMLElement.prototype), {
     },
 
     isItemVisible(item) {
+        const viewOffset = this.getViewDimension().left;
         const itemDimensions = item.offset();
-        return !(itemDimensions.left + itemDimensions.width < -this.offset) && !(itemDimensions.left > -this.offset + this.getViewWidth());
+        const itemIsOuterLeft = itemDimensions.left + itemDimensions.width < viewOffset - this.offset;
+        const itemIsOuterRight = itemDimensions.left > viewOffset - this.offset + this.getViewWidth();
+        
+        return !itemIsOuterLeft && !itemIsOuterRight;
     },
 
     loadImagesForItem(item) {
@@ -113,6 +117,11 @@ let as24carousel = Object.assign(Object.create(HTMLElement.prototype), {
 
     getViewWidth() {
         return this.el.width();
+    },
+    
+    getViewDimension() {
+        "use strict";
+        return this.el.offset();
     },
 
     createdCallback() {
