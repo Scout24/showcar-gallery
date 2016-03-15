@@ -10,22 +10,23 @@ let as24carousel = Object.assign(Object.create(HTMLElement.prototype), {
 
     wrapContainer() {
         this.container = this.el.children().wrapAll('<div class="as24-carousel-container">').parent();
+        this.container.wrapAll('<div class="as24-carousel-wrapper">');
     },
 
     hideLeftPagination() {
-        this.pagination.left && this.pagination.left.addClass('hide');
+        this.pagination.left.addClass('hide');
     },
 
     hideRightPagination() {
-        this.pagination.right && this.pagination.right.addClass('hide');
+        this.pagination.right.addClass('hide');
     },
 
     showLeftPagination() {
-        this.pagination.left && this.pagination.left.removeClass('hide');
+        this.pagination.left.removeClass('hide');
     },
 
     showRightPagination() {
-        this.pagination.right && this.pagination.right.removeClass('hide');
+        this.pagination.right.removeClass('hide');
     },
 
     loadPagination() {

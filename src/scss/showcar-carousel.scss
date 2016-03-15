@@ -2,21 +2,17 @@ $itemWidth: 310px;
 $itemHeight: 310px;
 
 as24-carousel {
-  overflow: hidden;
   display: block;
   position: relative;
-
+  margin: 0 20px;
   .as24-pagination {
-
     &[data-dir="left"] {
-      left: 10px;
+      left: -10px;
       transform: rotate(180deg);
     }
-
     &[data-dir="right"] {
-      right: 10px;
+      right: -10px;
     }
-
     content: '';
     border: 2px solid transparent;
     position: absolute;
@@ -31,17 +27,13 @@ as24-carousel {
     &.hide {
         opacity: 0;
     }
-
     &:hover:not(.hide) {
         background-color: rgba(0, 0, 0, .8);
     }
-
     &:focus {
       outline: none;
     }
-
-  }
-
+  } /* End pagination */
   as24-carousel-item {
     border: 1px solid silver;
     display: inline-block;
@@ -51,11 +43,9 @@ as24-carousel {
     background-color: white;
     text-align: center;
     line-height: 1.5rem;
-
     .description {
       padding: 20px 20px 28px;
     }
-
     img {
       min-height: 180px;
       display: block;
@@ -64,6 +54,9 @@ as24-carousel {
     &:first-child {
       margin-left: 0;
     }
+  }
+  .as24-carousel-wrapper {
+    overflow: hidden;
   }
   .as24-carousel-container {
     height: $itemHeight;

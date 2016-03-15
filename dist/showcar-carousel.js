@@ -60,18 +60,19 @@
 	
 	    wrapContainer: function wrapContainer() {
 	        this.container = this.el.children().wrapAll('<div class="as24-carousel-container">').parent();
+	        this.container.wrapAll('<div class="as24-carousel-wrapper">');
 	    },
 	    hideLeftPagination: function hideLeftPagination() {
-	        this.pagination.left && this.pagination.left.addClass('hide');
+	        this.pagination.left.addClass('hide');
 	    },
 	    hideRightPagination: function hideRightPagination() {
-	        this.pagination.right && this.pagination.right.addClass('hide');
+	        this.pagination.right.addClass('hide');
 	    },
 	    showLeftPagination: function showLeftPagination() {
-	        this.pagination.left && this.pagination.left.removeClass('hide');
+	        this.pagination.left.removeClass('hide');
 	    },
 	    showRightPagination: function showRightPagination() {
-	        this.pagination.right && this.pagination.right.removeClass('hide');
+	        this.pagination.right.removeClass('hide');
 	    },
 	    loadPagination: function loadPagination() {
 	        var _this = this;
