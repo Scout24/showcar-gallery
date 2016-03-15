@@ -13,23 +13,23 @@ let as24carousel = Object.assign(Object.create(HTMLElement.prototype), {
     },
 
     hideLeftPagination() {
-        this.pagination.left && this.pagination.left.css('opacity', 0);
+        this.pagination.left && this.pagination.left.addClass('hide');
     },
 
     hideRightPagination() {
-        this.pagination.right && this.pagination.right.css('opacity', 0);
+        this.pagination.right && this.pagination.right.addClass('hide');
     },
 
     showLeftPagination() {
-        this.pagination.left && this.pagination.left.css('opacity', .4);
+        this.pagination.left && this.pagination.left.removeClass('hide');
     },
 
     showRightPagination() {
-        this.pagination.right && this.pagination.right.css('opacity', .4);
+        this.pagination.right && this.pagination.right.removeClass('hide');
     },
 
     loadPagination() {
-        const pager = $('<a href="#!" class="as24-pagination">');
+        const pager = $('<a href="#!" class="as24-pagination hide">');
         this.pagination.left = pager.clone().data('dir', 'left').on('click touch', () => {
             this.el.trigger('slide', ['left'])
         });
@@ -89,7 +89,7 @@ let as24carousel = Object.assign(Object.create(HTMLElement.prototype), {
         const itemDimensions = item.offset();
         const itemIsOuterLeft = itemDimensions.left + itemDimensions.width < viewOffset - this.offset;
         const itemIsOuterRight = itemDimensions.left > viewOffset - this.offset + this.getViewWidth();
-        
+
         return !itemIsOuterLeft && !itemIsOuterRight;
     },
 
@@ -118,7 +118,7 @@ let as24carousel = Object.assign(Object.create(HTMLElement.prototype), {
     getViewWidth() {
         return this.el.width();
     },
-    
+
     getViewDimension() {
         "use strict";
         return this.el.offset();

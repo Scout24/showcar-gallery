@@ -62,21 +62,21 @@
 	        this.container = this.el.children().wrapAll('<div class="as24-carousel-container">').parent();
 	    },
 	    hideLeftPagination: function hideLeftPagination() {
-	        this.pagination.left && this.pagination.left.css('opacity', 0);
+	        this.pagination.left && this.pagination.left.addClass('hide');
 	    },
 	    hideRightPagination: function hideRightPagination() {
-	        this.pagination.right && this.pagination.right.css('opacity', 0);
+	        this.pagination.right && this.pagination.right.addClass('hide');
 	    },
 	    showLeftPagination: function showLeftPagination() {
-	        this.pagination.left && this.pagination.left.css('opacity', .4);
+	        this.pagination.left && this.pagination.left.removeClass('hide');
 	    },
 	    showRightPagination: function showRightPagination() {
-	        this.pagination.right && this.pagination.right.css('opacity', .4);
+	        this.pagination.right && this.pagination.right.removeClass('hide');
 	    },
 	    loadPagination: function loadPagination() {
 	        var _this = this;
 	
-	        var pager = $('<a href="#!" class="as24-pagination">');
+	        var pager = $('<a href="#!" class="as24-pagination hide">');
 	        this.pagination.left = pager.clone().data('dir', 'left').on('click touch', function () {
 	            _this.el.trigger('slide', ['left']);
 	        });
