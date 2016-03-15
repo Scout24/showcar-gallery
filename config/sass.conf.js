@@ -1,4 +1,4 @@
-module.exports = (function() {
+module.exports = (function () {
     var grunt = require("grunt");
     var DEBUG = !!grunt.option('dbg');
 
@@ -9,9 +9,18 @@ module.exports = (function() {
             sourceMapEmbed: true
         },
         files: [
-            {dest: 'examples/css/style.css', src: 'examples/css/style.scss'},
-            {dest: 'examples/magazine/css/style.css', src: 'examples/magazine/css/style.scss'},
-            {dest: 'dist/showcar-gallery.css', src: 'src/scss/showcar-gallery.scss'}
+            {src: 'src/scss/showcar-carousel.scss', dest: 'dist/showcar-carousel.css'},
+            {src: 'src/scss/showcar-gallery.scss', dest: 'dist/showcar-gallery.css'},
+            {src: 'examples/carousel/css/style.scss', dest: 'examples/carousel/css/style.css'},
+            {src: 'examples/gallery/css/style.scss', dest: 'examples/gallery/css/style.css'},
+            {src: 'examples/css/style.scss', dest: 'examples/css/style.css'},
+            {
+                expand: true,
+                cwd: 'examples',
+                src: ['*.scss'],
+                dest: 'examples',
+                ext: '.css'
+            }
         ]
     }
 })();
