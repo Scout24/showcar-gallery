@@ -5,14 +5,17 @@ as24-carousel {
   display: block;
   position: relative;
   margin: 0 20px;
+
   .as24-pagination {
     &[data-dir="left"] {
       left: -10px;
       transform: rotate(180deg);
     }
+
     &[data-dir="right"] {
       right: -10px;
     }
+
     content: '';
     border: 2px solid transparent;
     position: absolute;
@@ -24,6 +27,7 @@ as24-carousel {
     background: rgba(0, 0, 0, .5) url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyOCIgaGVpZ2h0PSI0OCIgdmlld0JveD0iMCAwIDI4IDQ4Ij48c3R5bGU+LnN0MHtmaWxsLXJ1bGU6ZXZlbm9kZDtjbGlwLXJ1bGU6ZXZlbm9kZDtmaWxsOiNmZmZ9PC9zdHlsZT48cGF0aCBjbGFzcz0ic3QwIiBkPSJNMjcuNCAyNC4xTDMuMSA0OCAwIDQ1LjFsMjEuNC0yMUwwIDMuMSAzLjEgMHoiLz48L3N2Zz4=) no-repeat 18px center;
     background-size: 30%;
     transition: background-color 0.3s, opacity .3s;
+
     &.hide {
         opacity: 0;
     }
@@ -33,7 +37,9 @@ as24-carousel {
     &:focus {
       outline: none;
     }
-  } /* End pagination */
+  }
+
+  /* End pagination */
   as24-carousel-item {
     border: 1px solid silver;
     display: inline-block;
@@ -43,21 +49,28 @@ as24-carousel {
     background-color: white;
     text-align: center;
     line-height: 1.5rem;
+
     .description {
       padding: 20px 20px 28px;
     }
+
     img {
       min-height: 180px;
       display: block;
       background-color: #ddd;
     }
-    &:first-child {
-      margin-left: 0;
+
+    @media screen and (min-width: 320px) {
+      &:first-child {
+        margin-left: 0;
+      }
     }
   }
+
   .as24-carousel-wrapper {
     overflow: hidden;
   }
+
   .as24-carousel-container {
     height: $itemHeight;
     width: 9999em;
