@@ -1,48 +1,150 @@
-let as24carousel = Object.assign(Object.create(HTMLElement.prototype), {
-    items: [],
-    el: null,
-    container: null,
-    pagination: {
-        left: null,
-        right: null
-    },
-    offset: 0,
+class Carousel {
+
+    constructor(element) {
+        this.element   = $(element);
+        this.items     = $('as24-carousel-item', this.element);
+        this.container = null;
+        this.pagination = {
+            left: null,
+            right: null
+        };
+        this.offset = 0;
+        this.itemWidth = 310;
+
+        this.touchStart = {};
+        this.touchPrev  = {};
+
+        this.wrapContainer();
+        this.loadPagination();
+        this.showRightPagination();
+        this.loadVisibleImages();
+
+        this.element.on('slide', this.paginate.bind(this));
+
+        this.element.on('touchstart', this.onTouchStart.bind(this));
+        this.element.on('touchmove',  this.onTouchMove.bind(this));
+        this.element.on('touchend',   this.onTouchEnd.bind(this));
+    }
+
+    /**
+     * @param {TouchEvent|Event} event
+     */
+    onTouchStart(event) {
+        const target = $(event.target);
+
+        this.items.addClass('no-transition');
+        this.resetTouch();
+        if (!target.hasClass('as24-pagination')) {
+            this.touchStart = this.getTouchCoords(event);
+            this.touchPrev  = this.touchStart;
+        }
+    }
+
+    /**
+     * @param {TouchEvent|Event} event
+     */
+    onTouchMove(event) {
+        if (!this.isSwiping()) {
+            return;
+        }
+
+        const touchCoords = this.getTouchCoords(event);
+        const startDiffX  = Math.abs(touchCoords.x - this.touchStart.x);
+        const startDiffY  = Math.abs(touchCoords.y - this.touchStart.y);
+
+        if (startDiffX < startDiffY) {
+            this.items.removeClass('no-transition');
+            this.resetTouch();
+        } else {
+            event.preventDefault();
+            this.touchPrev = touchCoords;
+        }
+    }
+
+    /**
+     *
+     * @param {TouchEvent|Event} event
+     */
+    onTouchEnd(event) {
+        this.items.removeClass('no-transition');
+        if (!this.isSwiping()) {
+            return;
+        }
+
+        const touchCoords = this.getTouchCoords(event.changedTouches[0]);
+        let touchDiffX    = this.touchStart.x - touchCoords.x;
+        let absTouchDiffX = Math.abs(touchDiffX);
+        let howMany       = Math.ceil(absTouchDiffX / this.itemWidth);
+
+        for (let i = 0; i < howMany; i++) {
+            if (touchDiffX > 0) {
+                this.paginate(null, 'right');
+            } else if (touchDiffX < 0) {
+                this.paginate(null, 'left');
+            }
+        }
+    }
+
+    /**
+     * @param {TouchEvent|Event} event
+     * @returns {{x: (Number), y: (Number)}}
+     */
+    getTouchCoords(event) {
+        let touch = event.touches && event.touches[0];
+
+        return {
+            x: event.clientX || (touch && touch.clientX),
+            y: event.clientY || (touch && touch.clientY)
+        };
+    }
+
+    resetTouch() {
+        this.touchStart = {};
+        this.touchPrev  = {};
+    }
+
+    /**
+     * @returns {boolean}
+     */
+    isSwiping() {
+        return (Object.keys(this.touchStart).length > 0);
+    }
 
     wrapContainer() {
-        this.container = this.el.children().wrapAll('<div class="as24-carousel-container">').parent();
+        this.container = this.element.children().wrapAll('<div class="as24-carousel-container">').parent();
         this.container.wrapAll('<div class="as24-carousel-wrapper">');
-    },
+    }
 
     hideLeftPagination() {
         this.pagination.left.addClass('hide');
-    },
+    }
 
     hideRightPagination() {
         this.pagination.right.addClass('hide');
-    },
+    }
 
     showLeftPagination() {
         this.pagination.left.removeClass('hide');
-    },
+    }
 
     showRightPagination() {
         this.pagination.right.removeClass('hide');
-    },
+    }
 
     loadPagination() {
         const pager = $('<a href="#!" class="as24-pagination hide">');
         this.pagination.left = pager.clone().data('dir', 'left').on('click touch', () => {
-            this.el.trigger('slide', ['left'])
+            this.element.trigger('slide', ['left'])
         });
         this.pagination.right = pager.clone().data('dir', 'right').on('click touch', () => {
-            this.el.trigger('slide', ['right'])
+            this.element.trigger('slide', ['right'])
         });
-        this.el.append(this.pagination.left).append(this.pagination.right);
-    },
+        this.element.append(this.pagination.left).append(this.pagination.right);
+    }
 
     paginate(event, direction) {
-        const item = this.items.first();
-        let distance = this.getItemWidth(item);
+        const item      = this.items.first();
+        let distance    = this.getItemWidth(item);
         const minOffset = this.getMinOffset();
         let newOffset;
 
@@ -65,17 +167,19 @@ let as24carousel = Object.assign(Object.create(HTMLElement.prototype), {
         }
         if (0 === this.offset) {
             this.hideLeftPagination();
+            this.element.css({ 'margin': '0 0 0 20px' });
         } else {
             this.showLeftPagination();
         }
         if (minOffset >= this.offset) {
             this.hideRightPagination();
+            this.element.css({ 'margin': '0 20px 0 0' });
         } else {
             this.showRightPagination();
         }
         this.loadVisibleImages();
         this.container.css('transform', 'translate3d(' + this.offset + 'px, 0, 0)');
-    },
+    }
 
     getMinOffset() {
         let fullWidth = 0;
@@ -83,7 +187,7 @@ let as24carousel = Object.assign(Object.create(HTMLElement.prototype), {
             fullWidth += this.getItemWidth($(item));
         });
         return -fullWidth + this.getViewWidth() + 2 * parseInt(this.items.last().css('margin-right'), 10);
-    },
+    }
 
     isItemVisible(item) {
         const viewOffset = this.getViewDimension().left;
@@ -92,7 +196,7 @@ let as24carousel = Object.assign(Object.create(HTMLElement.prototype), {
         const itemIsOuterRight = itemDimensions.left > viewOffset - this.offset + this.getViewWidth();
 
         return !itemIsOuterLeft && !itemIsOuterRight;
-    },
+    }
 
     loadImagesForItem(item) {
         const images = $('img[data-src]', item);
@@ -101,45 +205,56 @@ let as24carousel = Object.assign(Object.create(HTMLElement.prototype), {
             const $img = $(image);
             $img.attr('src', $img.data('src')).removeAttr('data-src');
         });
-    },
+    }
 
     loadVisibleImages() {
         this.items.each((index, item) => {
-            if (this.isItemVisible($(item))) {
+            let queriedItem = $(item);
+            // fix width and height for mobile devices
+            let elementOffset = this.element.offset();
+            let carouselWidth = elementOffset.width;
+            if (carouselWidth < 310) {
+                this.itemWidth = elementOffset.width - 20;
+                queriedItem.css({
+                    width: this.itemWidth,
+                    height: elementOffset.height
+                });
+            }
+
+            if (this.isItemVisible(queriedItem)) {
                 this.loadImagesForItem(item);
             }
+
         });
-    },
+    }
 
     getItemWidth(item) {
         const margin = parseInt(item.css('margin-right'), 10) * 2;
         return item.width() + margin;
-    },
+    }
 
     getViewWidth() {
-        return this.el.width();
-    },
+        return this.element.width();
+    }
 
     getViewDimension() {
         "use strict";
-        return this.el.offset();
-    },
-
-    createdCallback() {
-        this.el = $(this);
-        this.items = $('as24-carousel-item', this.el);
-        this.wrapContainer();
-        this.loadPagination();
-        this.showRightPagination();
-        this.loadVisibleImages();
-
-        this.el.on('slide', this.paginate);
+        return this.element.offset();
     }
-});
+
+}
+
+function onElementCreated() {
+    this.carousel = new Carousel(this);
+}
 
 try {
     document.registerElement('as24-carousel', {
-        prototype: as24carousel
+        prototype: Object.assign(
+            Object.create(HTMLElement.prototype, {
+                createdCallback: { value: onElementCreated }
+            })
+        )
     });
 } catch (e) {
     if (window && window.console) {
