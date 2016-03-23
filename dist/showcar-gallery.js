@@ -97,8 +97,10 @@
 	     * @returns {{itemName: string, leftPager: string, rightPager: string, pager: string}}
 	     */
 	
+	
 	    _createClass(Gallery, [{
 	        key: 'registerEvent',
+	
 	
 	        /**
 	         * @param {HTMLElement} element
@@ -417,7 +419,7 @@
 	    }, {
 	        key: 'moveItems',
 	        value: function moveItems(direction) {
-	            var left = undefined;
+	            var left = void 0;
 	            var itemWidth = this.itemWidth;
 	
 	            this.items.each(function (index, item) {
