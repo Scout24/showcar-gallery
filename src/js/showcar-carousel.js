@@ -167,11 +167,13 @@ class Carousel {
         }
         if (0 === this.offset) {
             this.hideLeftPagination();
+            this.element.css({ 'margin': '0 0 0 20px' });
         } else {
             this.showLeftPagination();
         }
         if (minOffset >= this.offset) {
             this.hideRightPagination();
+            this.element.css({ 'margin': '0 20px 0 0' });
         } else {
             this.showRightPagination();
         }
@@ -212,7 +214,7 @@ class Carousel {
             let elementOffset = this.element.offset();
             let carouselWidth = elementOffset.width;
             if (carouselWidth < 310) {
-                this.itemWidth = elementOffset.width;
+                this.itemWidth = elementOffset.width - 20;
                 queriedItem.css({
                     width: this.itemWidth,
                     height: elementOffset.height
