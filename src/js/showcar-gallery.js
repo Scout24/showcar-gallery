@@ -374,7 +374,11 @@ try {
         prototype: Object.assign(
             Object.create(HTMLElement.prototype, {
                 createdCallback: { value: onElementCreated }
-            })
+            }), {
+                redraw: function () {
+                    this.gallery.redraw()
+                }
+            }
         )
     });
 } catch (e) {

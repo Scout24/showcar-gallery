@@ -69,10 +69,7 @@
 	        this.touchStart = {};
 	        this.touchPrev = {};
 	
-	        this.wrapContainer();
-	        this.loadPagination();
-	        this.showRightPagination();
-	        this.loadVisibleImages();
+	        this.render();
 	
 	        this.element.on('slide', this.paginate.bind(this));
 	
@@ -82,11 +79,34 @@
 	    }
 	
 	    /**
-	     * @param {TouchEvent|Event} event
+	     * Do all the stuff needed for rendering the carousel
 	     */
 	
 	
 	    _createClass(Carousel, [{
+	        key: 'render',
+	        value: function render() {
+	            this.wrapContainer();
+	            this.loadPagination();
+	            this.showRightPagination();
+	            this.loadVisibleImages();
+	        }
+	
+	        /**
+	         * Redraw the whole carousel (can be triggered from outside)
+	         */
+	
+	    }, {
+	        key: 'redraw',
+	        value: function redraw() {
+	            this.render();
+	        }
+	
+	        /**
+	         * @param {TouchEvent|Event} event
+	         */
+	
+	    }, {
 	        key: 'onTouchStart',
 	        value: function onTouchStart(event) {
 	            var target = $(event.target);
@@ -346,7 +366,11 @@
 	    document.registerElement('as24-carousel', {
 	        prototype: _extends(Object.create(HTMLElement.prototype, {
 	            createdCallback: { value: onElementCreated }
-	        }))
+	        }), {
+	            redraw: function redraw() {
+	                this.carousel.redraw();
+	            }
+	        })
 	    });
 	} catch (e) {
 	    if (window && window.console) {

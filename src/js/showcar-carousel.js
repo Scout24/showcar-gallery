@@ -14,16 +14,30 @@ class Carousel {
         this.touchStart = {};
         this.touchPrev  = {};
 
-        this.wrapContainer();
-        this.loadPagination();
-        this.showRightPagination();
-        this.loadVisibleImages();
+        this.render();
 
         this.element.on('slide', this.paginate.bind(this));
 
         this.element.on('touchstart', this.onTouchStart.bind(this));
         this.element.on('touchmove',  this.onTouchMove.bind(this));
         this.element.on('touchend',   this.onTouchEnd.bind(this));
+    }
+
+    /**
+     * Do all the stuff needed for rendering the carousel
+     */
+    render() {
+        this.wrapContainer();
+        this.loadPagination();
+        this.showRightPagination();
+        this.loadVisibleImages();
+    }
+
+    /**
+     * Redraw the whole carousel (can be triggered from outside)
+     */
+    redraw() {
+        this.render();
     }
 
     /**
@@ -253,7 +267,11 @@ try {
         prototype: Object.assign(
             Object.create(HTMLElement.prototype, {
                 createdCallback: { value: onElementCreated }
-            })
+            }), {
+                redraw: function () {
+                    this.carousel.redraw()
+                }
+            }
         )
     });
 } catch (e) {

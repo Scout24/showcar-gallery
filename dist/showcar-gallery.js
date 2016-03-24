@@ -494,7 +494,11 @@
 	    module.exports = document.registerElement(tagName, {
 	        prototype: _extends(Object.create(HTMLElement.prototype, {
 	            createdCallback: { value: onElementCreated }
-	        }))
+	        }), {
+	            redraw: function redraw() {
+	                this.gallery.redraw();
+	            }
+	        })
 	    });
 	} catch (e) {
 	    if (window && window.console) {
