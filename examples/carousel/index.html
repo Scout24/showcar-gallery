@@ -12,6 +12,19 @@
 </head>
 <body>
 
+<as24-carousel-item id="dynshis">
+    <a href="#!">
+        <img data-src="http://www.shropshirestar.com/wpmvc/wp/wp-content/uploads/2011/05/delorean-flickr.jpg"
+             alt=""/>
+    </a>
+    <div class="description">
+        <a href="#!">
+            <h1>DYNAMICALLY INSERTED</H1>
+        </a>
+        Ein bisschen Dynamic muss sein.
+    </div>
+</as24-carousel-item>
+
 <div class="sc-content-container">
     <h2 class="sc-font">Aktuelles aus dem Magazin</h2>
     <as24-carousel>
@@ -94,9 +107,15 @@
 </div>
 
 
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/document-register-element/0.5.4/document-register-element.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.1.6/zepto.min.js"></script>
 <script src="../../dist/showcar-carousel.js"></script>
 
+<script>
+!function($){
+    $('.as24-carousel-container').append($("#dynshis"));
+}(window.Zepto);
+</script>
 </body>
 </html>

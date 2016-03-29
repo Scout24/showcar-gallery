@@ -57,7 +57,6 @@
 	        _classCallCheck(this, Carousel);
 	
 	        this.element = $(element);
-	        this.items = $('as24-carousel-item', this.element);
 	        this.container = null;
 	        this.pagination = {
 	            left: null,
@@ -78,13 +77,12 @@
 	        this.element.on('touchend', this.onTouchEnd.bind(this));
 	    }
 	
-	    /**
-	     * Do all the stuff needed for rendering the carousel
-	     */
-	
-	
 	    _createClass(Carousel, [{
 	        key: 'render',
+	
+	        /**
+	         * Do all the stuff needed for rendering the carousel
+	         */
 	        value: function render() {
 	            this.wrapContainer();
 	            this.loadPagination();
@@ -247,7 +245,7 @@
 	            var item = this.items.first();
 	            var distance = this.getItemWidth(item);
 	            var minOffset = this.getMinOffset();
-	            var newOffset = void 0;
+	            var newOffset = undefined;
 	
 	            switch (direction) {
 	                case 'left':
@@ -352,6 +350,11 @@
 	            "use strict";
 	
 	            return this.element.offset();
+	        }
+	    }, {
+	        key: 'items',
+	        get: function get() {
+	            return $('as24-carousel-item', this.element);
 	        }
 	    }]);
 	
