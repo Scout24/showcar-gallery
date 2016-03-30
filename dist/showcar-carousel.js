@@ -80,6 +80,7 @@
 	    _createClass(Carousel, [{
 	        key: 'render',
 	
+	
 	        /**
 	         * Do all the stuff needed for rendering the carousel
 	         */
@@ -245,7 +246,7 @@
 	            var item = this.items.first();
 	            var distance = this.getItemWidth(item);
 	            var minOffset = this.getMinOffset();
-	            var newOffset = undefined;
+	            var newOffset = void 0;
 	
 	            switch (direction) {
 	                case 'left':
