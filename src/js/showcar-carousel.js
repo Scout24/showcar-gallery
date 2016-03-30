@@ -2,7 +2,6 @@ class Carousel {
 
     constructor(element) {
         this.element   = $(element);
-        this.items     = $('as24-carousel-item', this.element);
         this.container = null;
         this.pagination = {
             left: null,
@@ -21,6 +20,10 @@ class Carousel {
         this.element.on('touchstart', this.onTouchStart.bind(this));
         this.element.on('touchmove',  this.onTouchMove.bind(this));
         this.element.on('touchend',   this.onTouchEnd.bind(this));
+    }
+
+    get items() {
+        return $('as24-carousel-item', this.element);
     }
 
     /**
