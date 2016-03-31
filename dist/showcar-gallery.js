@@ -271,7 +271,7 @@
 	                overlayWidth -= parseInt(firstChild.css('margin-left'));
 	            }
 	
-	            overlays.css('width', overlayWidth);
+	            overlays.css({ 'width': overlayWidth, 'opacity': 100 });
 	        }
 	    }, {
 	        key: 'fillItems',
