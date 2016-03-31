@@ -231,11 +231,15 @@
 	        value: function loadPagination() {
 	            var _this = this;
 	
-	            var pager = $('<a href="#!" class="as24-pagination hide">');
-	            this.pagination.left = pager.clone().data('dir', 'left').on('click touch', function () {
+	            var pager = $('<a href="#" class="as24-pagination hide">');
+	            this.pagination.left = pager.clone().data('dir', 'left').on('click touch', function (event) {
+	                event.stopPropagation();
+	                event.preventDefault();
 	                _this.element.trigger('slide', ['left']);
 	            });
-	            this.pagination.right = pager.clone().data('dir', 'right').on('click touch', function () {
+	            this.pagination.right = pager.clone().data('dir', 'right').on('click touch', function (event) {
+	                event.stopPropagation();
+	                event.preventDefault();
 	                _this.element.trigger('slide', ['right']);
 	            });
 	            this.element.append(this.pagination.left).append(this.pagination.right);
@@ -321,7 +325,7 @@
 	                // fix width and height for mobile devices
 	                var elementOffset = _this3.element.offset();
 	                var carouselWidth = elementOffset.width;
-	                if (carouselWidth < 310) {
+	                if (carouselWidth < _this3.itemWidth) {
 	                    _this3.itemWidth = elementOffset.width - 20;
 	                    queriedItem.css({
 	                        width: _this3.itemWidth,
