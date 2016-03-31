@@ -149,11 +149,15 @@ class Carousel {
     }
 
     loadPagination() {
-        const pager = $('<a href="#!" class="as24-pagination hide">');
-        this.pagination.left = pager.clone().data('dir', 'left').on('click touch', () => {
+        const pager = $('<a href="#" class="as24-pagination hide">');
+        this.pagination.left = pager.clone().data('dir', 'left').on('click touch', (event) => {
+            event.stopPropagation();
+            event.preventDefault();
             this.element.trigger('slide', ['left'])
         });
-        this.pagination.right = pager.clone().data('dir', 'right').on('click touch', () => {
+        this.pagination.right = pager.clone().data('dir', 'right').on('click touch', (event) => {
+            event.stopPropagation();
+            event.preventDefault();
             this.element.trigger('slide', ['right'])
         });
         this.element.append(this.pagination.left).append(this.pagination.right);
@@ -167,7 +171,7 @@ class Carousel {
 
         switch (direction) {
             case 'left':
-                let maxOffset = 0;
+                const maxOffset = 0;
                 newOffset = this.offset + distance;
                 if (newOffset > maxOffset) {
                     distance = maxOffset + Math.abs(this.offset);
@@ -230,7 +234,7 @@ class Carousel {
             // fix width and height for mobile devices
             let elementOffset = this.element.offset();
             let carouselWidth = elementOffset.width;
-            if (carouselWidth < 310) {
+            if (carouselWidth < this.itemWidth) {
                 this.itemWidth = elementOffset.width - 20;
                 queriedItem.css({
                     width: this.itemWidth,
