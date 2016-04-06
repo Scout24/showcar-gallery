@@ -4,7 +4,9 @@ $itemHeight: 310px;
 as24-carousel {
   display: block;
   position: relative;
-  margin: 0 0 0 20px;
+  margin: 0 20px;
+  transition: margin 0.33s;
+  will-change: margin;
 
   .as24-pagination {
     &[data-dir="left"] {
