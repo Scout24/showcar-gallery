@@ -247,6 +247,7 @@
 	    }, {
 	        key: 'paginate',
 	        value: function paginate(event, direction) {
+	            var container = this.element[0].querySelector('.as24-carousel-container');
 	            var item = this.items.first();
 	            var distance = this.getItemWidth(item);
 	            var minOffset = this.getMinOffset();
@@ -282,7 +283,11 @@
 	                this.showRightPagination();
 	            }
 	            this.loadVisibleImages();
-	            this.container.css('transform', 'translate3d(' + this.offset + 'px, 0, 0)');
+	            if ('transform' in container.style) {
+	                container.style.transform = 'translate3d(' + this.offset + 'px, 0, 0)';
+	            } else {
+	                container.style.webkitTransform = 'translate3d(' + this.offset + 'px, 0, 0)';
+	            }
 	        }
 	    }, {
 	        key: 'getMinOffset',

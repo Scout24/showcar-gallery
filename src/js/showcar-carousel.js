@@ -164,6 +164,7 @@ class Carousel {
     }
 
     paginate(event, direction) {
+        const container = this.element[0].querySelector('.as24-carousel-container');
         const item      = this.items.first();
         let distance    = this.getItemWidth(item);
         const minOffset = this.getMinOffset();
@@ -199,7 +200,11 @@ class Carousel {
             this.showRightPagination();
         }
         this.loadVisibleImages();
-        this.container.css('transform', 'translate3d(' + this.offset + 'px, 0, 0)');
+        if ('transform' in container.style) {
+            container.style.transform = 'translate3d(' + this.offset + 'px, 0, 0)';
+        } else {
+            container.style.webkitTransform = 'translate3d(' + this.offset + 'px, 0, 0)';
+        }
     }
 
     getMinOffset() {
