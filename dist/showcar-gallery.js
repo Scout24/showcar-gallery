@@ -369,8 +369,8 @@
 	                $(item).css('left', leftPos);
 	            });
 	
-	            //position pager to left bottom corner
-	            $(this.selectors.pager, this.rootElement).css('left', centerPos + parseInt(this.items.first().css('margin-left'), 10));
+	            //position pager to bottom center
+	            $(this.selectors.pager, this.rootElement).css('left', centerPos + this.itemWidth / 2 - 30);
 	
 	            this.showPageInfo();
 	            this.loadImages();
