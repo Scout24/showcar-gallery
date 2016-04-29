@@ -11,11 +11,13 @@ as24-carousel {
   .as24-pagination {
     &[data-dir="left"] {
       left: 10px;
+      transition: margin 0.33s;
       transform: rotate(180deg);
     }
 
     &[data-dir="right"] {
       right: 10px;
+      transition: margin 0.33s;
     }
 
     content: '';

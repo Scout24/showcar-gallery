@@ -190,15 +190,24 @@ class Carousel {
         if (0 === this.offset) {
             this.hideLeftPagination();
             this.element.css({ 'margin': '0 0 0 20px' });
+
+            this.pagination.right.css({ 'margin-right': '20px' });
+            this.pagination.left.css({ 'margin-left': '0' });
         } else {
             this.showLeftPagination();
+            // this.pagination.left.css({ 'margin-left': '20px' });
         }
         if (minOffset >= this.offset) {
             this.hideRightPagination();
             this.element.css({ 'margin': '0 20px 0 0' });
+
+            this.pagination.left.css({ 'margin-left': '20px' });
+            this.pagination.right.css({ 'margin-right': '0' });
         } else {
             this.showRightPagination();
+            // this.pagination.right.css({ 'margin-right': '20px' });
         }
+
         this.loadVisibleImages();
         if ('transform' in container.style) {
             container.style.transform = 'translate3d(' + this.offset + 'px, 0, 0)';
