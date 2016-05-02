@@ -461,9 +461,9 @@
 	        get: function get() {
 	            return {
 	                itemName: 'as24-gallery-item',
-	                leftPager: '.left',
-	                rightPager: '.right',
-	                pager: '.pager'
+	                leftPager: 'as24-gallery .left',
+	                rightPager: 'as24-gallery .right',
+	                pager: 'as24-gallery .pager'
 	            };
 	        }
 	
