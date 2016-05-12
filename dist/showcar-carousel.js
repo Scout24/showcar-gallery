@@ -278,7 +278,6 @@
 	                this.pagination.left.css({ 'margin-left': '0' });
 	            } else {
 	                this.showLeftPagination();
-	                // this.pagination.left.css({ 'margin-left': '20px' });
 	            }
 	            if (minOffset >= this.offset) {
 	                this.hideRightPagination();
@@ -288,7 +287,6 @@
 	                this.pagination.right.css({ 'margin-right': '0' });
 	            } else {
 	                this.showRightPagination();
-	                // this.pagination.right.css({ 'margin-right': '20px' });
 	            }
 	
 	            this.loadVisibleImages();
@@ -339,14 +337,14 @@
 	                // fix width and height for mobile devices
 	                var elementOffset = _this3.element.offset();
 	                var carouselWidth = elementOffset.width;
-	                if (carouselWidth < _this3.itemWidth) {
+	
+	                if (carouselWidth < queriedItem.width() && carouselWidth > 0) {
 	                    _this3.itemWidth = elementOffset.width - 20;
 	                    queriedItem.css({
 	                        width: _this3.itemWidth,
 	                        height: elementOffset.height
 	                    });
 	                }
-	
 	                if (_this3.isItemVisible(queriedItem)) {
 	                    _this3.loadImagesForItem(item);
 	                }
@@ -391,6 +389,9 @@
 	        }), {
 	            redraw: function redraw() {
 	                this.carousel.redraw();
+	                this.carousel.element.css({ 'margin': '0 0 0 20px' });
+	                this.carousel.pagination.right.css({ 'margin-right': '20px' });
+	                this.carousel.pagination.left.css({ 'margin-left': '0' });
 	            }
 	        })
 	    });

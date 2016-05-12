@@ -195,7 +195,6 @@ class Carousel {
             this.pagination.left.css({ 'margin-left': '0' });
         } else {
             this.showLeftPagination();
-            // this.pagination.left.css({ 'margin-left': '20px' });
         }
         if (minOffset >= this.offset) {
             this.hideRightPagination();
@@ -205,7 +204,6 @@ class Carousel {
             this.pagination.right.css({ 'margin-right': '0' });
         } else {
             this.showRightPagination();
-            // this.pagination.right.css({ 'margin-right': '20px' });
         }
 
         this.loadVisibleImages();
@@ -248,18 +246,17 @@ class Carousel {
             // fix width and height for mobile devices
             let elementOffset = this.element.offset();
             let carouselWidth = elementOffset.width;
-            if (carouselWidth < this.itemWidth) {
+
+            if (carouselWidth < queriedItem.width() && carouselWidth > 0) {
                 this.itemWidth = elementOffset.width - 20;
                 queriedItem.css({
                     width: this.itemWidth,
                     height: elementOffset.height
                 });
             }
-
             if (this.isItemVisible(queriedItem)) {
                 this.loadImagesForItem(item);
             }
-
         });
     }
 
@@ -286,11 +283,14 @@ function onElementCreated() {
 try {
     document.registerElement('as24-carousel', {
         prototype: Object.assign(
-            Object.create(HTMLElement.prototype, {
+            Object.create( HTMLElement.prototype, {
                 createdCallback: { value: onElementCreated }
             }), {
                 redraw: function () {
-                    this.carousel.redraw()
+                    this.carousel.redraw();
+                    this.carousel.element.css({ 'margin': '0 0 0 20px' });
+                    this.carousel.pagination.right.css({ 'margin-right': '20px' });
+                    this.carousel.pagination.left.css({ 'margin-left': '0' });
                 }
             }
         )
