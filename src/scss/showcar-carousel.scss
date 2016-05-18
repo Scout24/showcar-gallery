@@ -56,6 +56,13 @@ as24-carousel {
 
     .description {
       padding: 20px 20px 28px;
+      > a {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        width: 100%;
+        display: block;
+      }
     }
 
     img {
