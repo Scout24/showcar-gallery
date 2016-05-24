@@ -1,26 +1,21 @@
-$itemWidth: 310px;
-$itemHeight: 310px;
+$item-width-s: calc(100vw - 40px);
+$item-width-m: 310px;
 
 as24-carousel {
   display: block;
   position: relative;
-  margin: 0 20px;
-  transition: margin 0.33s;
-  will-change: margin;
 
+  // CAROUSEL PAGINATION
   .as24-pagination {
-    &[data-dir="left"] {
-      left: 10px;
-      transition: margin 0.33s;
+    &[data-direction="left"] {
+      left: 20px;
       transform: rotate(180deg);
     }
 
-    &[data-dir="right"] {
-      right: 10px;
-      transition: margin 0.33s;
+    &[data-direction="right"] {
+      right: 20px;
     }
 
-    content: '';
     border: 2px solid transparent;
     position: absolute;
     top: 50%;
@@ -33,22 +28,21 @@ as24-carousel {
     transition: background-color 0.3s, opacity .3s;
 
     &.hide {
-        opacity: 0;
+      opacity: 0;
     }
     &:hover:not(.hide) {
-        background-color: rgba(0, 0, 0, .8);
+      background-color: rgba(0, 0, 0, .8);
     }
     &:focus {
       outline: none;
     }
   }
 
-  /* End pagination */
+  // CAROUSEL ITEM
   as24-carousel-item {
     border: 1px solid #dcdcdc;
     display: inline-block;
-    width: $itemWidth;
-    height: $itemHeight;
+    width: $item-width-s;
     margin: 0 10px;
     background-color: white;
     text-align: center;
@@ -73,8 +67,15 @@ as24-carousel {
 
     @media screen and (min-width: 320px) {
       &:first-child {
-        margin-left: 0;
+        margin-left: 20px;
       }
+      &:last-child {
+        margin-right: 20px;
+      }
+    }
+
+    @media screen and (min-width: 480px) {
+      width: $item-width-m;
     }
   }
 
@@ -83,8 +84,8 @@ as24-carousel {
   }
 
   .as24-carousel-container {
-    height: $itemHeight;
-    width: 9999em;
+    display: inline-block;
+    white-space: nowrap;
     transition: transform .9s;
     perspective: 1000px;
     transform: translate3d(0, 0, 0);
