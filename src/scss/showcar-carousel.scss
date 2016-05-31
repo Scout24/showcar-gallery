@@ -47,9 +47,32 @@ as24-carousel {
     background-color: white;
     text-align: center;
     line-height: 1.5rem;
+    vertical-align: top;
+
+    // Lazy image aspect ratio load hack for fixing the flickering bug on webkit
+    // Currently the style is set to support 4:3 images if the carousel uses an different format please overwrite "padding-bottom"
+    > a {
+      position: relative;
+      display: block;
+      overflow: hidden;
+      height: 0;
+      // Aspect ratio of the image ( 100% width / 75% height = 1.333 )
+      padding-bottom: 75%;
+      img {
+        // Expanding the image to the bounds of its parent container ( caution distortion! if aspect ratio is not set correctly )
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #ddd;
+      }
+    }
 
     .description {
       padding: 20px 20px 28px;
+      vertical-align: top;
       > a {
         overflow: hidden;
         white-space: nowrap;
@@ -57,12 +80,6 @@ as24-carousel {
         width: 100%;
         display: block;
       }
-    }
-
-    img {
-      width: 100%;
-      display: block;
-      background-color: #ddd;
     }
 
     @media screen and (min-width: 320px) {
