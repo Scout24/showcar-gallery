@@ -426,11 +426,9 @@
 	    }, {
 	        key: 'moveContainer',
 	        value: function moveContainer(distance) {
-	            if ('transform' in this.container.style) {
-	                this.container.style.transform = 'translate3d(' + distance + 'px, 0, 0)';
-	            } else {
-	                this.container.style.webkitTransform = 'translate3d(' + distance + 'px, 0, 0)';
-	            }
+	            distance = distance | 0;
+	            this.container.style.transform = 'translate3d(' + distance + 'px, 0, 0)';
+	            this.container.style.webkitTransform = 'translate3d(' + distance + 'px, 0, 0)';
 	        }
 	
 	        /**

@@ -310,8 +310,9 @@ class Carousel {
      * @param {Number} distance - the moving distance
      */
     moveContainer(distance){
-        this.container.style.transform = 'translate3d(' + distance | 0 + 'px, 0, 0)';
-        this.container.style.webkitTransform = 'translate3d(' + distance | 0 + 'px, 0, 0)';
+        distance = distance | 0;
+        this.container.style.transform = 'translate3d(' + distance + 'px, 0, 0)';
+        this.container.style.webkitTransform = 'translate3d(' + distance + 'px, 0, 0)';
     }
 
     /**
