@@ -389,12 +389,23 @@ Carousel.Coordinate = function(x = 0, y = 0){
     }
 };
 
+/**
+ * gets the current client height.
+ * @returns {number}
+ */
+function getWindowWidth() {
+    return window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+}
 
 /**
  * Handler for resizing
  */
 function resizeHandler() {
-    this.carousel.redraw();
+    let currentWindowWidth = getWindowWidth();
+    if(this.windowWidth !== currentWindowWidth){
+        this.windowWidth = currentWindowWidth;
+        this.carousel.redraw();
+    }
 }
 
 /**
@@ -409,6 +420,7 @@ function elementCreatedHandler() {
  */
 function elementAttachedHandler() {
     this.carousel.init();
+    this.windowWidth = getWindowWidth();
     window.addEventListener('resize', () =>{
         clearTimeout(resizeHandler);
         setTimeout(resizeHandler.bind(this),300);

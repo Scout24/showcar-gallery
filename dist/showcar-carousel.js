@@ -521,10 +521,22 @@
 	};
 	
 	/**
+	 * gets the current client height.
+	 * @returns {number}
+	 */
+	function getWindowWidth() {
+	    return window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+	}
+	
+	/**
 	 * Handler for resizing
 	 */
 	function resizeHandler() {
-	    this.carousel.redraw();
+	    var currentWindowWidth = getWindowWidth();
+	    if (this.windowWidth !== currentWindowWidth) {
+	        this.windowWidth = currentWindowWidth;
+	        this.carousel.redraw();
+	    }
 	}
 	
 	/**
@@ -541,6 +553,7 @@
 	    var _this4 = this;
 	
 	    this.carousel.init();
+	    this.windowWidth = getWindowWidth();
 	    window.addEventListener('resize', function () {
 	        clearTimeout(resizeHandler);
 	        setTimeout(resizeHandler.bind(_this4), 300);
