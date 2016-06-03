@@ -8,12 +8,12 @@ as24-carousel {
   // CAROUSEL PAGINATION
   .as24-pagination {
     &[data-direction="left"] {
-      left: 20px;
+      left: 10px;
       transform: rotate(180deg);
     }
 
     &[data-direction="right"] {
-      right: 20px;
+      right: 10px;
     }
 
     border: 2px solid transparent;
@@ -48,6 +48,7 @@ as24-carousel {
     text-align: center;
     line-height: 1.5rem;
     vertical-align: top;
+    margin-bottom: 1px;
 
     // Lazy image aspect ratio load hack for fixing the flickering bug on webkit
     // Currently the style is set to support 4:3 images if the carousel uses an different format please overwrite "padding-bottom"
