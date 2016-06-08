@@ -1,28 +1,30 @@
+var H = require('./helper');
+let {on, hide, show, appendTo, toggleClass, getWidth, getCSS, setCSS, addClass, removeClass, containsClass} = H;
 
 class Gallery {
 
     /**
-     * @param {HTMLElement} element
+     * @param {Element} element
      */
     constructor(element) {
-        this.rootElement = $(element);
-        this.container   = $(this.selectors.itemName, this.rootElement).parent();
-        this.items       = $(this.selectors.itemName, this.container);
+        this.rootElement = element;
+        this.container   = this.rootElement.querySelector(this.selectors.itemName).parentElement;
+        this.items       = this.container.querySelectorAll(this.selectors.itemName);
 
         this.positions  = [];
         this.touchStart = {};
         this.touchPrev  = {};
 
         this.duplicateClass  = 'duplicate';
-        this.centerFirstItem = false !== this.rootElement.data('center-first-item');
-        this.focusSingleItem = false !== this.rootElement.data('focus-single-item');
+        this.centerFirstItem = 'false' !== this.rootElement.getAttribute('data-center-first-item');
+        this.focusSingleItem = 'false' !== this.rootElement.getAttribute('data-focus-single-item');
 
         this.resizeHandler          = null;
         this.numberOfItemsToPreload = 0;
 
         // do this synchronously to omit side effects
-        this.items.each((index, item) => {
-            $(item).attr('data-number', index + 1);
+        Array.prototype.forEach.call(this.items, (item, index) => {
+            item.setAttribute('data-number', index + 1);
         });
 
         if (this.items.length < 2) {
@@ -30,8 +32,8 @@ class Gallery {
         }
 
         this.registerEvent(window, 'resize', this.onResize.bind(this));
-        this.registerEvent(this.selectors.leftPager,  'click', this.onPage.bind(this, 'left'));
-        this.registerEvent(this.selectors.rightPager, 'click', this.onPage.bind(this, 'right'));
+        this.registerEvent(this.rootElement.querySelector(this.selectors.leftPager), 'click', this.onPage.bind(this, 'left'));
+        this.registerEvent(this.rootElement.querySelector(this.selectors.rightPager), 'click', this.onPage.bind(this, 'right'));
         this.registerEvent(this.rootElement, 'touchstart', this.onTouchStart.bind(this));
         this.registerEvent(this.rootElement, 'touchmove',  this.onTouchMove.bind(this));
         this.registerEvent(this.rootElement, 'touchend',   this.onTouchEnd.bind(this));
@@ -55,17 +57,17 @@ class Gallery {
      * @returns {Number}
      */
     get preloadItems() {
-        return this.rootElement.data('preload-items') || 0;
+        return parseInt(this.rootElement.getAttribute('data-preload-items') || '0', 10);
     }
 
     /**
-     * @param {HTMLElement} element
-     * @param {Event} event
+     * @param {Node|HTMLElement} element
+     * @param {String} event
      * @param {Function} handler
      * @returns {Zepto}
      */
     registerEvent(element, event, handler) {
-        return $(element).on(event, handler);
+        return on(handler, event, element);
     }
 
     onResize() {
@@ -89,11 +91,11 @@ class Gallery {
      * @param {TouchEvent|Event} event
      */
     onTouchStart(event) {
-        const target = $(event.target);
+        const target = event.target;
 
-        this.items.addClass('no-transition');
+        Array.prototype.forEach.call(this.items, item => addClass('no-transition', item));
         this.resetTouch();
-        if (!target.hasClass('right') && !target.hasClass('left')) {
+        if (!containsClass('right', target) && !containsClass('left', target)) {
             this.touchStart = this.getTouchCoords(event);
             this.touchPrev  = this.touchStart;
         }
@@ -111,8 +113,7 @@ class Gallery {
         const startDiffX  = Math.abs(touchCoords.x - this.touchStart.x);
         const startDiffY  = Math.abs(touchCoords.y - this.touchStart.y);
         if (startDiffX < startDiffY) {
-            this.items.removeClass('no-transition');
-
+            Array.prototype.forEach.call(this.items, item => removeClass('no-transition', item));
             this.positionItems();
             this.resetTouch();
         } else {
@@ -128,7 +129,8 @@ class Gallery {
      * @param {TouchEvent|Event} event
      */
     onTouchEnd(event) {
-        this.items.removeClass('no-transition');
+        Array.prototype.forEach.call(this.items, item => removeClass('no-transition', item));
+
         if (!this.isSwiping()) {
             return;
         }
@@ -154,7 +156,8 @@ class Gallery {
     }
 
     triggerChange() {
-        this.rootElement.trigger('as24-gallery:change', []);
+        // TODO: trigger event
+        // this.rootElement.trigger('as24-gallery:change', []);
     }
 
     /**
@@ -183,26 +186,36 @@ class Gallery {
     }
 
     positionItems() {
-        this.items.each((index, item) => {
-            $(item).css('left', this.positions[index]);
+        Array.prototype.forEach.call(this.items, (item, idx) => {
+            setCSS('left', this.positions[idx] + 'px', item);
         });
     }
 
     resizeOverlays() {
-        let overlays        = $(this.selectors.rightPager + ', ' + this.selectors.leftPager, this.rootElement);
-        let overlayMinWidth = parseInt(overlays.css('min-width'));
+        let rightPager = this.rootElement.querySelector(this.selectors.rightPager);
+        let leftPager = this.rootElement.querySelector(this.selectors.leftPager);
+        let rightPagerMinWidth = parseInt(getCSS('min-width', rightPager), 10);
+        let leftPagerMinWidth = parseInt(getCSS('min-width', leftPager), 10);
+        let overlayMinWidth = Math.min(rightPagerMinWidth, leftPagerMinWidth);
 
-        overlayMinWidth += parseInt(this.items.first().css('margin-left'));
-        overlays.toggleClass('pagination-small', (this.itemWidth + 2 * overlayMinWidth) >= this.container.width());
+        overlayMinWidth += parseInt(getCSS('margin-left', this.items[0]), 10);
+
+        if ((this.itemWidth + 2 * overlayMinWidth) >= getWidth(this.container)) {
+            toggleClass('pagination-small', rightPager);
+            toggleClass('pagination-small', leftPager);
+        }
         let overlayWidth = 0;
 
         if (this.items.length > 1) {
-            const firstChild  = this.items.first();
-            overlayWidth      = this.rootElement[0].clientWidth / 2 - this.itemWidth / 2;
-            overlayWidth     -= parseInt(firstChild.css('margin-left'));
+            const firstChild  = this.items[0];
+            overlayWidth      = this.rootElement.clientWidth / 2 - this.itemWidth / 2;
+            overlayWidth     -= parseInt(getCSS('margin-left', firstChild), 10);
         }
-
-        overlays.css({ 'width': overlayWidth, 'opacity': 100 });
+        
+        setCSS('width', overlayWidth + 'px', rightPager);
+        setCSS('opacity', 100, rightPager);
+        setCSS('width', overlayWidth + 'px', leftPager);
+        setCSS('opacity', 100, leftPager);
     }
 
     fillItems () {
@@ -213,53 +226,60 @@ class Gallery {
             return;
         }
         if (noOfItems > 2) {
-            space = this.container.get(0).clientWidth - noOfItems * this.itemWidth;
+            space = this.container.clientWidth - noOfItems * this.itemWidth;
         }
 
         let itemsToCreate = Math.ceil(Math.ceil(space / this.itemWidth) / noOfItems) * noOfItems;
-        let index         = noOfItems;
+        let index = noOfItems;
         for (let i = 1; i <= itemsToCreate; i++) {
-            let dataNo  = i % noOfItems;
-            dataNo      = dataNo || noOfItems;
-            index      += 1;
-            let element = $('[data-number="' + dataNo + '"]').clone().data('number', index).addClass(this.duplicateClass);
-            let target  = $('[data-number="' + (index - 1) + '"]');
+            let dataNo = i % noOfItems;
+            dataNo = dataNo || noOfItems;
+            index += 1;
+            let clone = this.rootElement.querySelector('[data-number="' + dataNo + '"]').cloneNode(true);
+            clone.dataset.number = index;
+            addClass(this.duplicateClass, clone);
+            let target  = this.rootElement.querySelector('[data-number="' + (index - 1) + '"]');
 
-            target.after(element);
+            target.parentNode.appendChild(clone);
         }
 
-        this.items = $(this.selectors.itemName, this.container);
+        this.items = this.container.querySelectorAll(this.selectors.itemName);
     }
 
     showPageInfo() {
-        const duplicates    = this.items.filter('.duplicate');
+        const duplicates    = Array.prototype.filter.call(this.items, (item) => containsClass('.duplicate', item));
         const totalPages    = this.items.length - duplicates.length;
         const middleItem    = this.centerFirstItem ? Math.ceil(this.items.length / 2) : 1;
-        const currentNumber = $(this.items[middleItem - 1]).data('number');
+        const currentNumber = this.items[middleItem - 1].dataset.number;
         const currentPage   = currentNumber % totalPages || totalPages;
 
-        $(this.selectors.pager, this.rootElement).html(currentPage + '/' + totalPages);
+        this.rootElement.querySelector(this.selectors.pager).innerHTML = currentPage + '/' + totalPages;
     }
 
     /**
      * @returns {Number}
      */
     calculateItemWidth() {
-        const firstChild = this.items.first();
+        const firstChild = this.items[0];
         let itemWidth    = 0;
 
-        if (firstChild.length > 0) {
-            itemWidth = firstChild.width();
-            itemWidth += parseInt(firstChild.css('margin-left'), 10);
-            itemWidth += parseInt(firstChild.css('margin-right'), 10);
+        if (firstChild) {
+            itemWidth = getWidth(firstChild);
+            itemWidth += parseInt(getCSS('margin-left', firstChild), 10);
+            itemWidth += parseInt(getCSS('margin-right', firstChild), 10);
         }
 
         return itemWidth;
     }
 
     handleEdgecases() {
-        $(this.selectors.leftPager + ', ' + this.selectors.rightPager + ', ' + this.selectors.pager, this.rootElement).hide();
-        0 === this.items.length && $('.placeholder', this.rootElement).show();
+        hide(this.selectors.leftPager);
+        hide(this.selectors.rightPager);
+        hide(this.selectors.pager);
+        hide(this.rootElement);
+        if (0 === this.items.length) {
+            show(this.rootElement.querySelector('.placeholder'));
+        }
     }
 
     /**
@@ -268,29 +288,30 @@ class Gallery {
     positionElements(reorder) {
         const itemCount  = this.items.length;
         const middleItem = Math.ceil(this.items.length / 2);
-        const centerPos  = this.centerFirstItem ? (this.container.get(0).clientWidth - this.itemWidth) / 2 : 0;
+        const centerPos  = this.centerFirstItem ? (this.container.clientWidth - this.itemWidth) / 2 : 0;
 
         if (reorder) {
-            this.items.each((index, item) => {
+            Array.prototype.forEach.call(this.items, (item, index) => {
                 if (index <= itemCount / 2) {
-                    this.container.append(item);
+                    appendTo(this.container, item);
                 }
             });
         }
 
-        this.items     = $(this.selectors.itemName, this.container);
+        this.items     = this.container.querySelectorAll(this.selectors.itemName);// $(this.selectors.itemName, this.container);
         this.positions = [];
 
-        this.items.each((index, item) => {
+        Array.prototype.forEach.call(this.items, (item, index) => {
             let indexDiff = ((index + 1) - middleItem);
             let leftPos   = centerPos + (indexDiff * this.itemWidth);
 
             this.positions.push(leftPos);
-            $(item).css('left', leftPos);
+            setCSS('left', leftPos + 'px', item);
         });
 
         //position pager to bottom center
-        $(this.selectors.pager, this.rootElement).css('left', centerPos + (this.itemWidth / 2) - 30);
+        let left = (centerPos + (this.itemWidth / 2) - 30) + 'px';
+        setCSS('left', left, this.rootElement.querySelector(this.selectors.pager));
 
         this.showPageInfo();
         this.loadImages();
@@ -299,31 +320,39 @@ class Gallery {
     loadImages() {
         const itemCount  = this.items.length;
         const middleItem = Math.ceil(itemCount / 2);
-        const centerPos  = (this.container.get(0).clientWidth - this.itemWidth) / 2;
+        const centerPos  = (this.container.clientWidth - this.itemWidth) / 2;
 
-        this.items.each((index, item) => {
+        Array.prototype.forEach.call(this.items, (item, index) => {
             let indexDiff = ((index + 1) - middleItem);
             let leftPos   = centerPos + (indexDiff * this.itemWidth);
 
-            if (leftPos + this.itemWidth + (this.numberOfItemsToPreload * this.itemWidth) > 0 && leftPos - (this.numberOfItemsToPreload * this.itemWidth) < this.container.width()) {
-                let image = $('[data-src]', item);
-                if (image.length > 0) {
-                    image[0].src = image.data('src');
-                    image.attr('data-src', null);
+            if (
+                leftPos + this.itemWidth + (this.numberOfItemsToPreload * this.itemWidth) > 0 &&
+                leftPos - (this.numberOfItemsToPreload * this.itemWidth) < getWidth(this.container)
+            ) {
+                let image = item.querySelector('[data-src]');
+                if (image) {
+                    if (image.hasAttribute('data-src')) {
+                        image.src = image.getAttribute('data-src');
+                        image.removeAttribute('data-src');
+                    }
                 }
             }
         });
     }
 
     moveLeft() {
-        this.items.last().insertBefore(this.items.first());
-        this.items = $(this.selectors.itemName, this.container);
+        let last = this.items[this.items.length - 1];
+        let parent = last.parentNode;
+        parent.insertBefore(last, parent.firstChild);
+        this.items = this.container.querySelectorAll(this.selectors.itemName);
         this.showPageInfo();
     }
 
     moveRight() {
-        this.items.first().insertAfter(this.items.last());
-        this.items = $(this.selectors.itemName, this.container);
+        let parent = this.items[0].parentNode;
+        parent.appendChild(parent.removeChild(this.items[0]));
+        this.items = this.container.querySelectorAll(this.selectors.itemName);
         this.showPageInfo();
     }
 
@@ -334,11 +363,11 @@ class Gallery {
         let left;
         let itemWidth = this.itemWidth;
 
-        this.items.each((index, item) => {
+        Array.prototype.forEach((item, index) => {
             if (!left) {
-                left = parseInt($(item).css('left'));
+                left = parseInt(getCSS('left', item), 10);
             }
-            $(item).css('left', left + index * itemWidth + direction);
+            setCSS('left', left + index * itemWidth + direction + 'px', item);
         });
     }
 
