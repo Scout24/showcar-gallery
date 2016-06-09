@@ -14,7 +14,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
 </head>
 <body>
-<as24-gallery id="gallery-example" data-preload-items="2">
+<div id="output">Id of the gallery: </div>
+<as24-gallery id="gallery-example" data-preload-items="2" data-id="my-gallery-1">
     <div class="left"></div>
     <as24-gallery-item>
         <a href="http://placehold.it/640x480?text=1">
@@ -77,7 +78,7 @@
     <div class="pager"></div>
 </as24-gallery>
 
-<as24-gallery id="gallery-example" data-preload-items="2">
+<as24-gallery id="gallery-example" data-preload-items="2" data-id="my-gallery-2">
     <div class="left"></div>
     <as24-gallery-item>
         <a href="http://placehold.it/640x480?text=1">
@@ -139,6 +140,13 @@
     <div class="right"></div>
     <div class="pager"></div>
 </as24-gallery>
+
+<script>
+    var output = document.getElementById('output');
+    document.addEventListener('as24-gallery:change', function(e) {
+        output.innerText = 'Id of the gallery: ' + e.detail.id;
+    });
+</script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/document-register-element/0.5.4/document-register-element.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/zepto/1.1.6/zepto.min.js"></script>

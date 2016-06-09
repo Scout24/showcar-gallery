@@ -1,3 +1,4 @@
+var customEventPolyfill = require('./custom-event-polyfill');
 var H = require('./helper');
 let {on, hide, show, appendTo, toggleClass, getWidth, getCSS, setCSS, addClass, removeClass, containsClass} = H;
 
@@ -7,19 +8,21 @@ class Gallery {
      * @param {Element} element
      */
     constructor(element) {
+        customEventPolyfill();
         this.rootElement = element;
-        this.container   = this.rootElement.querySelector(this.selectors.itemName).parentElement;
-        this.items       = this.container.querySelectorAll(this.selectors.itemName);
+        this.galleryID = this.rootElement.getAttribute('data-id') || Math.random().toString(16).substr(2);
+        this.container = this.rootElement.querySelector(this.selectors.itemName).parentElement;
+        this.items = this.container.querySelectorAll(this.selectors.itemName);
 
-        this.positions  = [];
+        this.positions = [];
         this.touchStart = {};
-        this.touchPrev  = {};
+        this.touchPrev = {};
 
-        this.duplicateClass  = 'duplicate';
+        this.duplicateClass = 'duplicate';
         this.centerFirstItem = 'false' !== this.rootElement.getAttribute('data-center-first-item');
         this.focusSingleItem = 'false' !== this.rootElement.getAttribute('data-focus-single-item');
 
-        this.resizeHandler          = null;
+        this.resizeHandler = null;
         this.numberOfItemsToPreload = 0;
 
         // do this synchronously to omit side effects
@@ -71,7 +74,9 @@ class Gallery {
     }
 
     onResize() {
-        this.resizeHandler && clearTimeout(this.resizeHandler);
+        if (this.resizeHandler) {
+            clearTimeout(this.resizeHandler);
+        }
         this.resizeHandler = setTimeout(this.render.bind(this), 500);
     }
 
@@ -156,8 +161,12 @@ class Gallery {
     }
 
     triggerChange() {
-        // TODO: trigger event
-        // this.rootElement.trigger('as24-gallery:change', []);
+        var evt = new CustomEvent('as24-gallery:change', {
+            detail: {
+                id: this.galleryID
+            }
+        });
+        window.document.dispatchEvent(evt);
     }
 
     /**

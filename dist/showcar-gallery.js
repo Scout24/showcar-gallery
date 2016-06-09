@@ -52,7 +52,8 @@
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var H = __webpack_require__(1);
+	var customEventPolyfill = __webpack_require__(1);
+	var H = __webpack_require__(2);
 	var on = H.on;
 	var hide = H.hide;
 	var show = H.show;
@@ -74,7 +75,9 @@
 	    function Gallery(element) {
 	        _classCallCheck(this, Gallery);
 	
+	        customEventPolyfill();
 	        this.rootElement = element;
+	        this.galleryID = this.rootElement.getAttribute('data-id') || Math.random().toString(16).substr(2);
 	        this.container = this.rootElement.querySelector(this.selectors.itemName).parentElement;
 	        this.items = this.container.querySelectorAll(this.selectors.itemName);
 	
@@ -127,7 +130,9 @@
 	    }, {
 	        key: 'onResize',
 	        value: function onResize() {
-	            this.resizeHandler && clearTimeout(this.resizeHandler);
+	            if (this.resizeHandler) {
+	                clearTimeout(this.resizeHandler);
+	            }
 	            this.resizeHandler = setTimeout(this.render.bind(this), 500);
 	        }
 	
@@ -230,10 +235,14 @@
 	        }
 	    }, {
 	        key: 'triggerChange',
-	        value: function triggerChange() {}
-	        // TODO: trigger event
-	        // this.rootElement.trigger('as24-gallery:change', []);
-	
+	        value: function triggerChange() {
+	            var evt = new CustomEvent('as24-gallery:change', {
+	                detail: {
+	                    id: this.galleryID
+	                }
+	            });
+	            window.document.dispatchEvent(evt);
+	        }
 	
 	        /**
 	         * @param {TouchEvent|Event} event
@@ -553,6 +562,28 @@
 
 /***/ },
 /* 1 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	module.exports = function () {
+	
+	    if (typeof window.CustomEvent === "function") return false;
+	
+	    function CustomEvent(event, params) {
+	        params = params || { bubbles: false, cancelable: false, detail: undefined };
+	        var evt = document.createEvent('CustomEvent');
+	        evt.initCustomEvent(event, params.bubbles, params.cancelable, params.detail);
+	        return evt;
+	    }
+	
+	    CustomEvent.prototype = window.Event.prototype;
+	
+	    window.CustomEvent = CustomEvent;
+	};
+
+/***/ },
+/* 2 */
 /***/ function(module, exports) {
 
 	'use strict';
