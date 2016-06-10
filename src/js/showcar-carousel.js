@@ -4,6 +4,8 @@ class Carousel {
 
     constructor(element) {
 
+        console.warn("DEPRECATED: Please, use showcar-carousel instead (https://github.com/AutoScout24/showcar-carousel)");
+
         this.element = element;
         this.container = null;
 
