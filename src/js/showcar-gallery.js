@@ -372,7 +372,7 @@ class Gallery {
         let left;
         let itemWidth = this.itemWidth;
 
-        Array.prototype.forEach((item, index) => {
+        Array.prototype.forEach.call(this.items, (item, index) => {
             if (!left) {
                 left = parseInt(getCSS('left', item), 10);
             }
