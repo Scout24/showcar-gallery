@@ -84,21 +84,21 @@ $('as24-gallery').on('as24-gallery:change', (e) => console.log("Page changed", e
 
 ### How to install:
 
-  To install showcar-gallery within your project use bower.
+  Via NPM:
 
-  `bower install --save git@github.com:AutoScout24/showcar-gallery.git`
+  `npm i --save git+ssh://git@github.com:AutoScout24/showcar-gallery.git`
 
-  Afterwards you need to add the css and js to your page.
+  Afterwards you can include it in your JS code
 
-  ```html
-  <link rel="stylesheet" href="../dist/showcar-gallery.css">
+  ```js
+  require('showcar-gallery') // or import 'showcar-gallery';
   ```
 
-  ```html
-  <script src="../dist/showcar-gallery.js"></script>
-  ```
+  ... and SCSS code
 
-  showcar-gallery requires zepto.js, please include it according to the zepto.js documentation.
+  ```scss
+  @import "node_modules/showcar-gallery/dist/showcar-gallery.css"
+  ```
 
 ## Contributing
 
