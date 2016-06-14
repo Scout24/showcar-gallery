@@ -1,6 +1,6 @@
 {
   "name": "showcar-gallery",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "This is a Gallery",
   "mail": "src/js/showcar-gallery.js",
   "directories": {

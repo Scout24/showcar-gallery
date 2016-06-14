@@ -8,11 +8,22 @@ class Gallery {
      * @param {Element} element
      */
     constructor(element) {
+        if (!element) {
+            throw "Root element is needed"
+        }
         customEventPolyfill();
         this.rootElement = element;
         this.galleryID = this.rootElement.getAttribute('data-id') || Math.random().toString(16).substr(2);
         this.container = this.rootElement.querySelector(this.selectors.itemName).parentElement;
         this.items = this.container.querySelectorAll(this.selectors.itemName);
+
+        this.rightPager = this.rootElement.querySelector(this.selectors.rightPager);
+        this.leftPager = this.rootElement.querySelector(this.selectors.leftPager);
+        this.pager = this.rootElement.querySelector(this.selectors.pager);
+
+        if (!this.rightPager || !this.leftPager) {
+            throw "Right or left pager is missing";
+        }
 
         this.positions = [];
         this.touchStart = {};
@@ -35,8 +46,8 @@ class Gallery {
         }
 
         this.registerEvent(window, 'resize', this.onResize.bind(this));
-        this.registerEvent(this.rootElement.querySelector(this.selectors.leftPager), 'click', this.onPage.bind(this, 'left'));
-        this.registerEvent(this.rootElement.querySelector(this.selectors.rightPager), 'click', this.onPage.bind(this, 'right'));
+        this.registerEvent(this.leftPager, 'click', this.onPage.bind(this, 'left'));
+        this.registerEvent(this.rightPager, 'click', this.onPage.bind(this, 'right'));
         this.registerEvent(this.rootElement, 'touchstart', this.onTouchStart.bind(this));
         this.registerEvent(this.rootElement, 'touchmove',  this.onTouchMove.bind(this));
         this.registerEvent(this.rootElement, 'touchend',   this.onTouchEnd.bind(this));
@@ -64,10 +75,10 @@ class Gallery {
     }
 
     /**
-     * @param {Node|HTMLElement} element
+     * @param {Element} element
      * @param {String} event
      * @param {Function} handler
-     * @returns {Zepto}
+     * @returns {Element}
      */
     registerEvent(element, event, handler) {
         return on(handler, event, element);
@@ -201,30 +212,28 @@ class Gallery {
     }
 
     resizeOverlays() {
-        let rightPager = this.rootElement.querySelector(this.selectors.rightPager);
-        let leftPager = this.rootElement.querySelector(this.selectors.leftPager);
-        let rightPagerMinWidth = parseInt(getCSS('min-width', rightPager), 10);
-        let leftPagerMinWidth = parseInt(getCSS('min-width', leftPager), 10);
+        let rightPagerMinWidth = this.rightPager ? parseInt(getCSS('min-width', this.rightPager), 10) : 0;
+        let leftPagerMinWidth = this.leftPager ? parseInt(getCSS('min-width', this.leftPager), 10) : 0;
         let overlayMinWidth = Math.min(rightPagerMinWidth, leftPagerMinWidth);
 
-        overlayMinWidth += parseInt(getCSS('margin-left', this.items[0]), 10);
+        overlayMinWidth += this.items.length ? parseInt(getCSS('margin-left', this.items[0]), 10) : 0;
 
         if ((this.itemWidth + 2 * overlayMinWidth) >= getWidth(this.container)) {
-            toggleClass('pagination-small', rightPager);
-            toggleClass('pagination-small', leftPager);
+            toggleClass('pagination-small', this.rightPager);
+            toggleClass('pagination-small', this.leftPager);
         }
         let overlayWidth = 0;
 
         if (this.items.length > 1) {
-            const firstChild  = this.items[0];
-            overlayWidth      = this.rootElement.clientWidth / 2 - this.itemWidth / 2;
-            overlayWidth     -= parseInt(getCSS('margin-left', firstChild), 10);
+            const firstChild = this.items[0];
+            overlayWidth = this.rootElement.clientWidth / 2 - this.itemWidth / 2;
+            overlayWidth -= parseInt(getCSS('margin-left', firstChild), 10);
         }
-        
-        setCSS('width', overlayWidth + 'px', rightPager);
-        setCSS('opacity', 100, rightPager);
-        setCSS('width', overlayWidth + 'px', leftPager);
-        setCSS('opacity', 100, leftPager);
+
+        setCSS('width', overlayWidth + 'px', this.rightPager);
+        setCSS('opacity', 100, this.rightPager);
+        setCSS('width', overlayWidth + 'px', this.leftPager);
+        setCSS('opacity', 100, this.leftPager);
     }
 
     fillItems () {
@@ -262,7 +271,9 @@ class Gallery {
         const currentNumber = this.items[middleItem - 1].dataset.number;
         const currentPage   = currentNumber % totalPages || totalPages;
 
-        this.rootElement.querySelector(this.selectors.pager).innerHTML = currentPage + '/' + totalPages;
+        if (this.pager) {
+            this.pager.innerHTML = currentPage + '/' + totalPages;
+        }
     }
 
     /**
@@ -282,12 +293,18 @@ class Gallery {
     }
 
     handleEdgecases() {
-        hide(this.selectors.leftPager);
-        hide(this.selectors.rightPager);
-        hide(this.selectors.pager);
         hide(this.rootElement);
-        if (0 === this.items.length) {
-            show(this.rootElement.querySelector('.placeholder'));
+        hide(this.leftPager);
+        hide(this.rightPager);
+
+        if (this.pager) {
+            hide(this.pager);
+        }
+
+        let placeholder = this.rootElement.querySelector('.placeholder');
+
+        if (!this.items.length && placeholder) {
+            show(placeholder);
         }
     }
 
@@ -307,7 +324,7 @@ class Gallery {
             });
         }
 
-        this.items     = this.container.querySelectorAll(this.selectors.itemName);// $(this.selectors.itemName, this.container);
+        this.items     = this.container.querySelectorAll(this.selectors.itemName);
         this.positions = [];
 
         Array.prototype.forEach.call(this.items, (item, index) => {
@@ -320,7 +337,9 @@ class Gallery {
 
         //position pager to bottom center
         let left = (centerPos + (this.itemWidth / 2) - 30) + 'px';
-        setCSS('left', left, this.rootElement.querySelector(this.selectors.pager));
+        if (this.pager) {
+            setCSS('left', left, this.pager);
+        }
 
         this.showPageInfo();
         this.loadImages();

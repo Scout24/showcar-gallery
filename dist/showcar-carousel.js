@@ -62,6 +62,8 @@
 	    function Carousel(element) {
 	        _classCallCheck(this, Carousel);
 	
+	        console.warn("DEPRECATED: Please, use showcar-carousel instead (https://github.com/AutoScout24/showcar-carousel)");
+	
 	        this.element = element;
 	        this.container = null;
 	
@@ -538,41 +540,49 @@
 	'use strict';
 	
 	/**
-	 *
+	 * Adds class to the dom element
 	 * @param {string} className
-	 * @param {HTMLElement} domEl
-	 * @returns {HTMLElement}
+	 * @param {Element} domEl
+	 * @returns {Element}
 	 */
 	function addClass(className, domEl) {
-	    var classList = [],
-	        classesString = domEl.getAttribute('class');
-	    if (classesString) {
-	        classList = classesString.split(' ');
-	        if (classList.indexOf(className) === -1) {
-	            classesString = classList.concat(className).join(' ');
-	        }
+	    if (domEl.classList) {
+	        domEl.classList.add(className);
 	    } else {
-	        classesString = className;
+	        var classList = [],
+	            classesString = domEl.getAttribute('class');
+	        if (classesString) {
+	            classList = classesString.split(' ');
+	            if (classList.indexOf(className) === -1) {
+	                classesString = classList.concat(className).join(' ');
+	            }
+	        } else {
+	            classesString = className;
+	        }
+	        domEl.setAttribute('class', classesString);
 	    }
-	    domEl.setAttribute('class', classesString);
 	    return domEl;
 	}
 	
 	/**
-	 *
+	 * Removed class from the element
 	 * @param {string} className
-	 * @param {HTMLElement} domEl
-	 * @returns {HTMLElement}
+	 * @param {Element} domEl
+	 * @returns {Element}
 	 */
 	function removeClass(className, domEl) {
-	    var classList = [],
-	        classesString = domEl.getAttribute('class');
-	    if (classesString) {
-	        classList = classesString.split(' ');
-	        if (classList.indexOf(className) !== -1) {
-	            classList.splice(classList.indexOf(className), 1);
+	    if (domEl.classList) {
+	        domEl.classList.remove(className);
+	    } else {
+	        var classList = [],
+	            classesString = domEl.getAttribute('class');
+	        if (classesString) {
+	            classList = classesString.split(' ');
+	            if (classList.indexOf(className) !== -1) {
+	                classList.splice(classList.indexOf(className), 1);
+	            }
+	            domEl.setAttribute('class', classList.join(' '));
 	        }
-	        domEl.setAttribute('class', classList.join(' '));
 	    }
 	    return domEl;
 	}
@@ -580,54 +590,79 @@
 	/**
 	 *
 	 * @param {string} className
-	 * @param {HTMLElement} domEl
+	 * @param {Element} domEl
 	 * @returns {boolean}
 	 */
 	function containsClass(className, domEl) {
-	    var classList = [],
-	        classesString = domEl.getAttribute('class');
-	    if (classesString) {
-	        classList = classesString.split(' ');
-	    }
-	    return classList.indexOf(className) > -1;
-	}
-	
-	function toggleClass(className, elem) {
-	    if (containsClass(className, elem)) {
-	        removeClass(className, elem);
+	    if (domEl.classList) {
+	        return domEl.classList.contains(className);
 	    } else {
-	        addClass(className, elem);
+	        var classList = [],
+	            classesString = domEl.getAttribute('class');
+	        if (classesString) {
+	            classList = classesString.split(' ');
+	        }
+	        return classList.indexOf(className) > -1;
 	    }
 	}
 	
 	/**
-	 * Hides provided element
-	 * @param {Element} el
+	 * Toggles class for the domElem
+	 * @param {string} className
+	 * @param {Element} domElem
+	 * @returns {Element}
 	 */
-	function hide(el) {
-	    el.style.display = 'none';
-	    return el;
-	}
-	
-	/**
-	 * Shows provided element
-	 * @param {Element} el
-	 */
-	function show(el) {
-	    el.style.display = 'block';
-	    return el;
-	}
-	
-	function on(cb, evtName, elem) {
-	    if (elem.addEventListener) {
-	        return elem.addEventListener(evtName, cb);
+	function toggleClass(className, domElem) {
+	    if (domElem.classList) {
+	        domElem.classList.toggle(className);
 	    } else {
-	        return elem.attachEvent('on' + evtName, cb);
+	        if (containsClass(className, domElem)) {
+	            removeClass(className, domElem);
+	        } else {
+	            addClass(className, domElem);
+	        }
 	    }
+	    return domElem;
 	}
 	
 	/**
-	 *
+	 * Hides the provided element
+	 * @param {Element} domElement
+	 * @returns {Element}
+	 */
+	function hide(domElement) {
+	    domElement.style.display = 'none';
+	    return domElement;
+	}
+	
+	/**
+	 * Shows the provided element
+	 * @param {Element} domElement
+	 * @returns {Element}
+	 */
+	function show(domElement) {
+	    domElement.style.display = 'block';
+	    return domElement;
+	}
+	
+	/**
+	 * Add event listener to the element
+	 * @param {function} eventHandlerFn
+	 * @param {string} eventName
+	 * @param {Element} domElement
+	 * @returns {Element}
+	 */
+	function on(eventHandlerFn, eventName, domElement) {
+	    if (domElement.addEventListener) {
+	        domElement.addEventListener(eventName, eventHandlerFn);
+	    } else {
+	        domElement.attachEvent('on' + eventName, eventHandlerFn);
+	    }
+	    return domElement;
+	}
+	
+	/**
+	 * Sets the CSS key: value
 	 * @param {string} rule
 	 * @param {string|number} val
 	 * @param {Element} elem
@@ -639,7 +674,7 @@
 	}
 	
 	/**
-	 *
+	 * Returns CSS value by the key
 	 * @param {string} rule
 	 * @param {Element} elem
 	 * @returns {string}
@@ -659,35 +694,17 @@
 	}
 	
 	/**
+	 * Appends an element to the target
 	 * @param {Element} target
-	 * @param {Element} el
+	 * @param {Element} element
 	 */
-	function appendTo(target, el) {
-	    target.appendChild(el);
+	function appendTo(target, element) {
+	    target.appendChild(element);
 	    return target;
 	}
 	
-	/**
-	 *
-	 * @param {NodeList} elList
-	 * @return {Element}
-	 */
-	function last(elList) {
-	    return elList[elList.length - 1];
-	}
-	
 	module.exports = {
-	    on: on,
-	    setCSS: setCSS,
-	    getCSS: getCSS,
-	    addClass: addClass,
-	    hide: hide,
-	    show: show,
-	    appendTo: appendTo,
-	    removeClass: removeClass,
-	    containsClass: containsClass,
-	    toggleClass: toggleClass,
-	    getWidth: getWidth
+	    on: on, setCSS: setCSS, getCSS: getCSS, addClass: addClass, hide: hide, show: show, appendTo: appendTo, removeClass: removeClass, containsClass: containsClass, toggleClass: toggleClass, getWidth: getWidth
 	};
 
 /***/ }

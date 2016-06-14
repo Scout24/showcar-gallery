@@ -75,11 +75,22 @@
 	    function Gallery(element) {
 	        _classCallCheck(this, Gallery);
 	
+	        if (!element) {
+	            throw "Root element is needed";
+	        }
 	        customEventPolyfill();
 	        this.rootElement = element;
 	        this.galleryID = this.rootElement.getAttribute('data-id') || Math.random().toString(16).substr(2);
 	        this.container = this.rootElement.querySelector(this.selectors.itemName).parentElement;
 	        this.items = this.container.querySelectorAll(this.selectors.itemName);
+	
+	        this.rightPager = this.rootElement.querySelector(this.selectors.rightPager);
+	        this.leftPager = this.rootElement.querySelector(this.selectors.leftPager);
+	        this.pager = this.rootElement.querySelector(this.selectors.pager);
+	
+	        if (!this.rightPager || !this.leftPager) {
+	            throw "Right or left pager is missing";
+	        }
 	
 	        this.positions = [];
 	        this.touchStart = {};
@@ -102,8 +113,8 @@
 	        }
 	
 	        this.registerEvent(window, 'resize', this.onResize.bind(this));
-	        this.registerEvent(this.rootElement.querySelector(this.selectors.leftPager), 'click', this.onPage.bind(this, 'left'));
-	        this.registerEvent(this.rootElement.querySelector(this.selectors.rightPager), 'click', this.onPage.bind(this, 'right'));
+	        this.registerEvent(this.leftPager, 'click', this.onPage.bind(this, 'left'));
+	        this.registerEvent(this.rightPager, 'click', this.onPage.bind(this, 'right'));
 	        this.registerEvent(this.rootElement, 'touchstart', this.onTouchStart.bind(this));
 	        this.registerEvent(this.rootElement, 'touchmove', this.onTouchMove.bind(this));
 	        this.registerEvent(this.rootElement, 'touchend', this.onTouchEnd.bind(this));
@@ -119,10 +130,10 @@
 	
 	
 	        /**
-	         * @param {Node|HTMLElement} element
+	         * @param {Element} element
 	         * @param {String} event
 	         * @param {Function} handler
-	         * @returns {Zepto}
+	         * @returns {Element}
 	         */
 	        value: function registerEvent(element, event, handler) {
 	            return on(handler, event, element);
@@ -287,17 +298,15 @@
 	    }, {
 	        key: 'resizeOverlays',
 	        value: function resizeOverlays() {
-	            var rightPager = this.rootElement.querySelector(this.selectors.rightPager);
-	            var leftPager = this.rootElement.querySelector(this.selectors.leftPager);
-	            var rightPagerMinWidth = parseInt(getCSS('min-width', rightPager), 10);
-	            var leftPagerMinWidth = parseInt(getCSS('min-width', leftPager), 10);
+	            var rightPagerMinWidth = this.rightPager ? parseInt(getCSS('min-width', this.rightPager), 10) : 0;
+	            var leftPagerMinWidth = this.leftPager ? parseInt(getCSS('min-width', this.leftPager), 10) : 0;
 	            var overlayMinWidth = Math.min(rightPagerMinWidth, leftPagerMinWidth);
 	
-	            overlayMinWidth += parseInt(getCSS('margin-left', this.items[0]), 10);
+	            overlayMinWidth += this.items.length ? parseInt(getCSS('margin-left', this.items[0]), 10) : 0;
 	
 	            if (this.itemWidth + 2 * overlayMinWidth >= getWidth(this.container)) {
-	                toggleClass('pagination-small', rightPager);
-	                toggleClass('pagination-small', leftPager);
+	                toggleClass('pagination-small', this.rightPager);
+	                toggleClass('pagination-small', this.leftPager);
 	            }
 	            var overlayWidth = 0;
 	
@@ -307,10 +316,10 @@
 	                overlayWidth -= parseInt(getCSS('margin-left', firstChild), 10);
 	            }
 	
-	            setCSS('width', overlayWidth + 'px', rightPager);
-	            setCSS('opacity', 100, rightPager);
-	            setCSS('width', overlayWidth + 'px', leftPager);
-	            setCSS('opacity', 100, leftPager);
+	            setCSS('width', overlayWidth + 'px', this.rightPager);
+	            setCSS('opacity', 100, this.rightPager);
+	            setCSS('width', overlayWidth + 'px', this.leftPager);
+	            setCSS('opacity', 100, this.leftPager);
 	        }
 	    }, {
 	        key: 'fillItems',
@@ -352,7 +361,9 @@
 	            var currentNumber = this.items[middleItem - 1].dataset.number;
 	            var currentPage = currentNumber % totalPages || totalPages;
 	
-	            this.rootElement.querySelector(this.selectors.pager).innerHTML = currentPage + '/' + totalPages;
+	            if (this.pager) {
+	                this.pager.innerHTML = currentPage + '/' + totalPages;
+	            }
 	        }
 	
 	        /**
@@ -376,12 +387,18 @@
 	    }, {
 	        key: 'handleEdgecases',
 	        value: function handleEdgecases() {
-	            hide(this.selectors.leftPager);
-	            hide(this.selectors.rightPager);
-	            hide(this.selectors.pager);
 	            hide(this.rootElement);
-	            if (0 === this.items.length) {
-	                show(this.rootElement.querySelector('.placeholder'));
+	            hide(this.leftPager);
+	            hide(this.rightPager);
+	
+	            if (this.pager) {
+	                hide(this.pager);
+	            }
+	
+	            var placeholder = this.rootElement.querySelector('.placeholder');
+	
+	            if (!this.items.length && placeholder) {
+	                show(placeholder);
 	            }
 	        }
 	
@@ -406,7 +423,7 @@
 	                });
 	            }
 	
-	            this.items = this.container.querySelectorAll(this.selectors.itemName); // $(this.selectors.itemName, this.container);
+	            this.items = this.container.querySelectorAll(this.selectors.itemName);
 	            this.positions = [];
 	
 	            Array.prototype.forEach.call(this.items, function (item, index) {
@@ -419,7 +436,9 @@
 	
 	            //position pager to bottom center
 	            var left = centerPos + this.itemWidth / 2 - 30 + 'px';
-	            setCSS('left', left, this.rootElement.querySelector(this.selectors.pager));
+	            if (this.pager) {
+	                setCSS('left', left, this.pager);
+	            }
 	
 	            this.showPageInfo();
 	            this.loadImages();
@@ -589,41 +608,49 @@
 	'use strict';
 	
 	/**
-	 *
+	 * Adds class to the dom element
 	 * @param {string} className
-	 * @param {HTMLElement} domEl
-	 * @returns {HTMLElement}
+	 * @param {Element} domEl
+	 * @returns {Element}
 	 */
 	function addClass(className, domEl) {
-	    var classList = [],
-	        classesString = domEl.getAttribute('class');
-	    if (classesString) {
-	        classList = classesString.split(' ');
-	        if (classList.indexOf(className) === -1) {
-	            classesString = classList.concat(className).join(' ');
-	        }
+	    if (domEl.classList) {
+	        domEl.classList.add(className);
 	    } else {
-	        classesString = className;
+	        var classList = [],
+	            classesString = domEl.getAttribute('class');
+	        if (classesString) {
+	            classList = classesString.split(' ');
+	            if (classList.indexOf(className) === -1) {
+	                classesString = classList.concat(className).join(' ');
+	            }
+	        } else {
+	            classesString = className;
+	        }
+	        domEl.setAttribute('class', classesString);
 	    }
-	    domEl.setAttribute('class', classesString);
 	    return domEl;
 	}
 	
 	/**
-	 *
+	 * Removed class from the element
 	 * @param {string} className
-	 * @param {HTMLElement} domEl
-	 * @returns {HTMLElement}
+	 * @param {Element} domEl
+	 * @returns {Element}
 	 */
 	function removeClass(className, domEl) {
-	    var classList = [],
-	        classesString = domEl.getAttribute('class');
-	    if (classesString) {
-	        classList = classesString.split(' ');
-	        if (classList.indexOf(className) !== -1) {
-	            classList.splice(classList.indexOf(className), 1);
+	    if (domEl.classList) {
+	        domEl.classList.remove(className);
+	    } else {
+	        var classList = [],
+	            classesString = domEl.getAttribute('class');
+	        if (classesString) {
+	            classList = classesString.split(' ');
+	            if (classList.indexOf(className) !== -1) {
+	                classList.splice(classList.indexOf(className), 1);
+	            }
+	            domEl.setAttribute('class', classList.join(' '));
 	        }
-	        domEl.setAttribute('class', classList.join(' '));
 	    }
 	    return domEl;
 	}
@@ -631,54 +658,79 @@
 	/**
 	 *
 	 * @param {string} className
-	 * @param {HTMLElement} domEl
+	 * @param {Element} domEl
 	 * @returns {boolean}
 	 */
 	function containsClass(className, domEl) {
-	    var classList = [],
-	        classesString = domEl.getAttribute('class');
-	    if (classesString) {
-	        classList = classesString.split(' ');
-	    }
-	    return classList.indexOf(className) > -1;
-	}
-	
-	function toggleClass(className, elem) {
-	    if (containsClass(className, elem)) {
-	        removeClass(className, elem);
+	    if (domEl.classList) {
+	        return domEl.classList.contains(className);
 	    } else {
-	        addClass(className, elem);
+	        var classList = [],
+	            classesString = domEl.getAttribute('class');
+	        if (classesString) {
+	            classList = classesString.split(' ');
+	        }
+	        return classList.indexOf(className) > -1;
 	    }
 	}
 	
 	/**
-	 * Hides provided element
-	 * @param {Element} el
+	 * Toggles class for the domElem
+	 * @param {string} className
+	 * @param {Element} domElem
+	 * @returns {Element}
 	 */
-	function hide(el) {
-	    el.style.display = 'none';
-	    return el;
-	}
-	
-	/**
-	 * Shows provided element
-	 * @param {Element} el
-	 */
-	function show(el) {
-	    el.style.display = 'block';
-	    return el;
-	}
-	
-	function on(cb, evtName, elem) {
-	    if (elem.addEventListener) {
-	        return elem.addEventListener(evtName, cb);
+	function toggleClass(className, domElem) {
+	    if (domElem.classList) {
+	        domElem.classList.toggle(className);
 	    } else {
-	        return elem.attachEvent('on' + evtName, cb);
+	        if (containsClass(className, domElem)) {
+	            removeClass(className, domElem);
+	        } else {
+	            addClass(className, domElem);
+	        }
 	    }
+	    return domElem;
 	}
 	
 	/**
-	 *
+	 * Hides the provided element
+	 * @param {Element} domElement
+	 * @returns {Element}
+	 */
+	function hide(domElement) {
+	    domElement.style.display = 'none';
+	    return domElement;
+	}
+	
+	/**
+	 * Shows the provided element
+	 * @param {Element} domElement
+	 * @returns {Element}
+	 */
+	function show(domElement) {
+	    domElement.style.display = 'block';
+	    return domElement;
+	}
+	
+	/**
+	 * Add event listener to the element
+	 * @param {function} eventHandlerFn
+	 * @param {string} eventName
+	 * @param {Element} domElement
+	 * @returns {Element}
+	 */
+	function on(eventHandlerFn, eventName, domElement) {
+	    if (domElement.addEventListener) {
+	        domElement.addEventListener(eventName, eventHandlerFn);
+	    } else {
+	        domElement.attachEvent('on' + eventName, eventHandlerFn);
+	    }
+	    return domElement;
+	}
+	
+	/**
+	 * Sets the CSS key: value
 	 * @param {string} rule
 	 * @param {string|number} val
 	 * @param {Element} elem
@@ -690,7 +742,7 @@
 	}
 	
 	/**
-	 *
+	 * Returns CSS value by the key
 	 * @param {string} rule
 	 * @param {Element} elem
 	 * @returns {string}
@@ -710,35 +762,17 @@
 	}
 	
 	/**
+	 * Appends an element to the target
 	 * @param {Element} target
-	 * @param {Element} el
+	 * @param {Element} element
 	 */
-	function appendTo(target, el) {
-	    target.appendChild(el);
+	function appendTo(target, element) {
+	    target.appendChild(element);
 	    return target;
 	}
 	
-	/**
-	 *
-	 * @param {NodeList} elList
-	 * @return {Element}
-	 */
-	function last(elList) {
-	    return elList[elList.length - 1];
-	}
-	
 	module.exports = {
-	    on: on,
-	    setCSS: setCSS,
-	    getCSS: getCSS,
-	    addClass: addClass,
-	    hide: hide,
-	    show: show,
-	    appendTo: appendTo,
-	    removeClass: removeClass,
-	    containsClass: containsClass,
-	    toggleClass: toggleClass,
-	    getWidth: getWidth
+	    on: on, setCSS: setCSS, getCSS: getCSS, addClass: addClass, hide: hide, show: show, appendTo: appendTo, removeClass: removeClass, containsClass: containsClass, toggleClass: toggleClass, getWidth: getWidth
 	};
 
 /***/ }
