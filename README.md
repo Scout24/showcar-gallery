@@ -1,6 +1,6 @@
 # showcar-gallery
 
-This module provides a easy to use gallery.
+This module provides an easy to use gallery.
 
 ## Usage
 
