@@ -84,36 +84,35 @@ $('as24-gallery').on('as24-gallery:change', (e) => console.log("Page changed", e
 
 ### How to install:
 
-  Via NPM:
+Via NPM:
 
-  `npm i --save git+ssh://git@github.com:AutoScout24/showcar-gallery.git`
+`npm i --save git+ssh://git@github.com:AutoScout24/showcar-gallery.git`
 
-  Afterwards you can include it in your JS code
+Afterwards you can include it in your JS code
 
-  ```js
-  require('showcar-gallery') // or import 'showcar-gallery';
-  ```
+```js
+require('showcar-gallery'); // or import 'showcar-gallery';
+```
 
-  ... and SCSS code
+For SCSS imports you need (sass-module-importer)[https://www.npmjs.com/package/sass-module-importer] plugin. After that, you can just import source code of the gallery:
 
-  ```scss
-  @import "node_modules/showcar-gallery/dist/showcar-gallery.css"
-  ```
+```scss
+@import "showcar-gallery/src/scss/showcar-gallery.scss"
+```
 
 ## Contributing
 
 ### How to contribute:
 
-  Fork this repository and `git clone` your fork. Then `npm install` the required dependencies.
+Fork this repository and `git clone` your fork. Then `npm install` the required dependencies.
 
-  Note: If you do not have `grunt` installed globally, use `./node_modules/.bin/grunt` instead.
+Note: If you do not have `grunt` installed globally, use `./node_modules/.bin/grunt` instead.
 
 #### Contribute
 
-  Save your changes and run `grunt dist` (or `./node_modules/.bin/grunt dist`).
+Save your changes and run `grunt dist` (or `./node_modules/.bin/grunt dist`).
 
-  Commit your code _and_ the compiled libraries in _./dist_. Then create a pull-request.
-
+Commit your code _and_ the compiled libraries in _./dist_. Then create a pull-request.
 
 ## License
 
