@@ -1,6 +1,6 @@
 # showcar-gallery
 
-This module provides an easy to use gallery.
+This module provides an easy to use gallery. [Demo page](https://rawgit.com/AutoScout24/showcar-gallery/master/examples/gallery/index.html)
 
 ## Usage
 
