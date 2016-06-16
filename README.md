@@ -94,7 +94,7 @@ Afterwards you can include it in your JS code
 require('showcar-gallery'); // or import 'showcar-gallery';
 ```
 
-For SCSS imports you need (sass-module-importer)[https://www.npmjs.com/package/sass-module-importer] plugin. After that, you can just import source code of the gallery:
+For SCSS imports you need [sass-module-importer](https://www.npmjs.com/package/sass-module-importer) plugin. After that, you can just import source code of the gallery:
 
 ```scss
 @import "showcar-gallery/src/scss/showcar-gallery.scss"
