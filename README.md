@@ -1,9 +1,14 @@
 # showcar-gallery
 
-DEPRECATED!!! Use the following repositories instead:
+DEPRECATED!!! 
+
+Use the following repositories instead:
 
 * [showcar-carousel](https://github.com/AutoScout24/showcar-carousel)
 * [showcar-pictures](https://github.com/AutoScout24/showcar-pictures)
+
+DEPRECATED!!! 
+
 
 This module provides an easy to use gallery. [Demo page](https://rawgit.com/AutoScout24/showcar-gallery/master/examples/gallery/index.html)
 
